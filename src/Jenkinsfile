@@ -2,21 +2,21 @@ pipeline {
     agent any
 
     environment {
-        GITHUB_TOKEN = credentials('github-token') // Utilise l'ID des identifiants GitHub
+               PYTHON = 'python3.10' // Spécifie la version de Python
     }
 
     stages {
         stage('Checkout') {
             steps {
                 // Cloner le dépôt en utilisant le token GitHub
-                git branch: 'main', url: "https://${GITHUB_TOKEN}:x-oauth-basic@github.com/tasnimkh24/Ml_Project.git"
+                git branch: 'main', url: "https://github.com/tasnimkh24/Ml_Project.git"
             }
         }
 
         stage('Install Dependencies') {
             steps {
                 // Créer un environnement virtuel Python
-                sh 'python3 -m venv venv'
+                sh '${PYTHON} -m venv venv'
                 // Activer l'environnement virtuel et installer les dépendances
                 sh '''
                     source venv/bin/activate
@@ -31,7 +31,7 @@ pipeline {
                 // Activer l'environnement virtuel et exécuter le script de préparation des données
                 sh '''
                     source venv/bin/activate
-                    python3 src/main.py --train-data data/train.csv --test data/test.csv --prepare
+                    ${PYTHON} src/main.py --train-data data/train.csv --test data/test.csv --prepare
                 '''
             }
         }
@@ -41,7 +41,7 @@ pipeline {
                 // Activer l'environnement virtuel et exécuter le script d'entraînement du modèle
                 sh '''
                     source venv/bin/activate
-                    python3 src/main.py --train-data data/train.csv --test data/test.csv --train
+                    ${PYTHON} src/main.py --train-data data/train.csv --test data/test.csv --train
                 '''
             }
         }
@@ -51,7 +51,7 @@ pipeline {
                 // Activer l'environnement virtuel et exécuter le script d'évaluation du modèle
                 sh '''
                     source venv/bin/activate
-                    python3 src/main.py --train-data data/train.csv --test data/test.csv --evaluate
+                    ${PYTHON} src/main.py --train-data data/train.csv --test data/test.csv --evaluate
                 '''
             }
         }
