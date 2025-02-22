@@ -1,0 +1,67 @@
+pipeline {
+    agent any
+
+    environment {
+        // Définir les variables d'environnement si nécessaire
+        PYTHON = 'python3'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Cloner le dépôt Git
+                git branch: 'main', url: 'https://github.com/votre-utilisateur/votre-repo.git'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                // Installer les dépendances Python
+                sh 'pip install -r requirements.txt'
+            }
+        }
+
+        stage('Prepare Data') {
+            steps {
+                // Exécuter la préparation des données
+                sh '${PYTHON} main.py --train data/train.csv --test data/test.csv --prepare'
+            }
+        }
+
+        stage('Train Model') {
+            steps {
+                // Entraîner le modèle
+                sh '${PYTHON} main.py --train data/train.csv --test data/test.csv'
+            }
+        }
+
+        stage('Evaluate Model') {
+            steps {
+                // Évaluer le modèle
+                sh '${PYTHON} main.py --train data/train.csv --test data/test.csv --evaluate'
+            }
+        }
+
+        stage('Predict') {
+            steps {
+                // Faire une prédiction
+                sh '${PYTHON} main.py --predict'
+            }
+        }
+    }
+
+    post {
+        always {
+            // Nettoyer après l'exécution si nécessaire
+            echo 'Pipeline terminé.'
+        }
+        success {
+            // Actions à effectuer en cas de succès
+            echo 'Pipeline réussi!'
+        }
+        failure {
+            // Actions à effectuer en cas d'échec
+            echo 'Pipeline échoué!'
+        }
+    }
+}
