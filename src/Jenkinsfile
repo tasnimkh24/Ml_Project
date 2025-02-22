@@ -1,67 +1,44 @@
 pipeline {
     agent any
-
-    environment {
-        // Définir les variables d'environnement si nécessaire
-        PYTHON = 'python3'
-    }
-
     stages {
         stage('Checkout') {
             steps {
-                // Cloner le dépôt Git
-                git branch: 'main', url: 'https://github.com/votre-utilisateur/votre-repo.git'
+               git branch: 'main', url: "https://${GITHUB_TOKEN}:x-oauth-basic@github.com/tasnimkh24/Ml_Project.git"
             }
         }
-
         stage('Install Dependencies') {
             steps {
-                // Installer les dépendances Python
-                sh 'pip install -r requirements.txt'
+                sh 'python3 -m pip install --upgrade pip'
+                sh 'python3 -m pip install --ignore-installed -r requirements.txt'
             }
         }
-
         stage('Prepare Data') {
             steps {
-                // Exécuter la préparation des données
-                sh '${PYTHON} main.py --train data/train.csv --test data/test.csv --prepare'
+                sh 'python3 src/main.py --train data/train.csv --test data/test.csv --prepare'
             }
         }
-
         stage('Train Model') {
             steps {
-                // Entraîner le modèle
-                sh '${PYTHON} main.py --train data/train.csv --test data/test.csv'
+                sh 'python3 src/main.py --train data/train.csv --test data/test.csv --train'
             }
         }
-
         stage('Evaluate Model') {
             steps {
-                // Évaluer le modèle
-                sh '${PYTHON} main.py --train data/train.csv --test data/test.csv --evaluate'
+                sh 'python3 src/main.py --test data/test.csv --evaluate'
             }
         }
-
-        stage('Predict') {
+        stage('Deploy Model') {
             steps {
-                // Faire une prédiction
-                sh '${PYTHON} main.py --predict'
+                sh 'python3 src/main.py --deploy'
             }
         }
     }
-
     post {
-        always {
-            // Nettoyer après l'exécution si nécessaire
-            echo 'Pipeline terminé.'
+        failure {
+            echo 'Pipeline failed!'
         }
         success {
-            // Actions à effectuer en cas de succès
-            echo 'Pipeline réussi!'
-        }
-        failure {
-            // Actions à effectuer en cas d'échec
-            echo 'Pipeline échoué!'
+            echo 'Pipeline succeeded!'
         }
     }
 }
