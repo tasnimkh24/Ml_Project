@@ -4,6 +4,7 @@ pipeline {
     environment {
         GITHUB_TOKEN = credentials('github-token') // Utilise l'ID des identifiants GitHub
         PYTHON = 'python3.10' // Spécifie la version de Python
+        VENV_PATH = '/tmp/venv' // Dossier accessible pour l'environnement virtuel
     }
 
     stages {
@@ -16,11 +17,11 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                // Créer un environnement virtuel Python
-                sh '${PYTHON} -m venv venv'
+                // Créer un environnement virtuel Python dans un dossier accessible
+                sh '${PYTHON} -m venv ${VENV_PATH}'
                 // Activer l'environnement virtuel et installer les dépendances
                 sh '''
-                    . venv/bin/activate
+                    . ${VENV_PATH}/bin/activate
                     pip install --upgrade pip
                     pip install -r requirements.txt
                 '''
@@ -31,7 +32,7 @@ pipeline {
             steps {
                 // Activer l'environnement virtuel et exécuter le script de préparation des données
                 sh '''
-                    . venv/bin/activate
+                    . ${VENV_PATH}/bin/activate
                     ${PYTHON} src/main.py --train-data data/train.csv --test data/test.csv --prepare
                 '''
             }
@@ -41,7 +42,7 @@ pipeline {
             steps {
                 // Activer l'environnement virtuel et exécuter le script d'entraînement du modèle
                 sh '''
-                    . venv/bin/activate
+                    . ${VENV_PATH}/bin/activate
                     ${PYTHON} src/main.py --train-data data/train.csv --test data/test.csv --train
                 '''
             }
@@ -51,7 +52,7 @@ pipeline {
             steps {
                 // Activer l'environnement virtuel et exécuter le script d'évaluation du modèle
                 sh '''
-                    . venv/bin/activate
+                    . ${VENV_PATH}/bin/activate
                     ${PYTHON} src/main.py --train-data data/train.csv --test data/test.csv --evaluate
                 '''
             }
