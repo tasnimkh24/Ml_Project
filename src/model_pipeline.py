@@ -11,7 +11,11 @@ from sklearn.model_selection import RandomizedSearchCV
 from scipy.stats import randint, uniform
 import joblib
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+import os
 
+import numpy as np
+import sklearn
+import logging
 
 def prepare_data(train_path, test_path):
     """
@@ -149,8 +153,11 @@ def evaluate_model(model, X_test, y_test):
     print(f"📊 Confusion Matrix:\n{cm}")
 
 
-import os
-import joblib
+
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def save_model(model, filename="gbm_model.joblib"):
     # Chemin relatif vers le dossier models/
@@ -159,7 +166,7 @@ def save_model(model, filename="gbm_model.joblib"):
     os.makedirs("models", exist_ok=True)
     # Sauvegardez le modèle
     joblib.dump(model, model_path)
-    print(f"\n💾 Model saved to '{model_path}' and logged as an artifact.")
+    logger.info(f"\n💾 Model saved to '{model_path}' and logged as an artifact.")
 
 def load_model(filename="gbm_model.joblib"):
     # Chemin relatif vers le dossier models/
@@ -167,15 +174,26 @@ def load_model(filename="gbm_model.joblib"):
     # Vérifiez si le fichier existe
     if not os.path.exists(model_path):
         raise FileNotFoundError(f"Model file not found: {model_path}")
+    
+    # Log library versions
+    logger.info(f"numpy version: {np.__version__}")
+    logger.info(f"joblib version: {joblib.__version__}")
+    logger.info(f"scikit-learn version: {sklearn.__version__}")
+
     # Chargez le modèle
-    model = joblib.load(model_path)
-    print(f"\n📂 Model loaded from '{model_path}'")
-    return model
+    logger.info(f"Loading model from: {model_path}")
+    try:
+        model = joblib.load(model_path)
+        logger.info(f"\n📂 Model loaded from '{model_path}'")
+        return model
+    except Exception as e:
+        logger.error(f"Error loading model: {e}")
+        raise
 
 def predict(features):
     # Chargez le modèle depuis le dossier models/
     model = load_model("gbm_model.joblib")
     # Faites une prédiction
     prediction = model.predict(features)
-    print(f"\n✅ Prediction Completed! Prediction: {prediction}")
+    logger.info(f"\n✅ Prediction Completed! Prediction: {prediction}")
     return prediction
