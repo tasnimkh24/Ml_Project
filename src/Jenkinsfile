@@ -21,7 +21,7 @@ pipeline {
                     . ${VENV_PATH}/bin/activate
                     pip install --upgrade pip
                     pip install -r requirements.txt
-                    pip install "pydantic<2.0.0"  # Forcer l'installation d'une version compatible
+                    pip install pytest pytest-cov  # Installer pytest et pytest-cov
                 '''
             }
         }
@@ -31,7 +31,7 @@ pipeline {
                 catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                     sh '''
                         . ${VENV_PATH}/bin/activate
-                        pip install bandit safety
+                        pip install "safety<2.0.0"  # Utiliser une version compatible de safety
                         bandit -r src/ -o bandit_report.txt
                         safety check > safety_report.txt
                     '''
@@ -50,10 +50,10 @@ pipeline {
                     sh '''
                         . ${VENV_PATH}/bin/activate
                         pip install flake8 black pylint isort
-                        flake8 src/ > flake8_report.txt
-                        black --check src/ > black_report.txt
-                        pylint src/ > pylint_report.txt
-                        isort --check-only src/ > isort_report.txt
+                        flake8 src/ --config=.flake8
+                        black --check src/
+                        pylint src/
+                        isort --check-only src/
                     '''
                 }
             }
@@ -69,8 +69,7 @@ pipeline {
                 catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                     sh '''
                         . ${VENV_PATH}/bin/activate
-                        pip install pytest pytest-cov
-                        pytest --cov=src tests/ > pytest_report.txt
+                        pytest --cov=src test/  # Exécuter les tests dans le dossier tests/
                     '''
                 }
             }
