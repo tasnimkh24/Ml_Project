@@ -1,4 +1,4 @@
-#!/home/tasnim/projet_final/venv/bin/python3.10
+#!/home/tasnim/projet_final/venv/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys
