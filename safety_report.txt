@@ -1,0 +1,795 @@
+
+
+[33m[1m+===========================================================================================================================================================================================+[0m
+
+
+[31m[1mDEPRECATED: [0m[33m[1mthis command (`check`) has been DEPRECATED, and will be unsupported beyond 01 June 2024.[0m
+
+
+[32mWe highly encourage switching to the new [0m[32m[1m`scan`[0m[32m command which is easier to use, more powerful, and can be set up to mimic the deprecated command if required.[0m
+
+
+[33m[1m+===========================================================================================================================================================================================+[0m
+
+
++==============================================================================+
+
+                               /$$$$$$            /$$
+                              /$$__  $$          | $$
+           /$$$$$$$  /$$$$$$ | $$  \__//$$$$$$  /$$$$$$   /$$   /$$
+          /$$_____/ |____  $$| $$$$   /$$__  $$|_  $$_/  | $$  | $$
+         |  $$$$$$   /$$$$$$$| $$_/  | $$$$$$$$  | $$    | $$  | $$
+          \____  $$ /$$__  $$| $$    | $$_____/  | $$ /$$| $$  | $$
+          /$$$$$$$/|  $$$$$$$| $$    |  $$$$$$$  |  $$$$/|  $$$$$$$
+         |_______/  \_______/|__/     \_______/   \___/   \____  $$
+                                                          /$$  | $$
+                                                         |  $$$$$$/
+  by safetycli.com                                        \______/
+
++==============================================================================+
+
+ [1mREPORT[0m 
+
+  Safety [1mv3.3.0[0m is scanning for [1mVulnerabilities[0m[1m...[0m
+[1m  Scanning dependencies[0m in your [1menvironment:[0m
+
+  -> /usr/lib/python310.zip
+  -> /home/tasnim/projet_final/venv/lib/python3.10/site-
+  packages/setuptools/_vendor
+  -> /home/tasnim/projet_final/venv/lib/python3.10/site-packages
+  -> /home/tasnim/projet_final/venv/bin
+  -> /usr/lib/python3.10
+  -> /usr/lib/python3.10/lib-dynload
+
+  Using [1mopen-source vulnerability database[0m
+[1m  Found and scanned 124 packages[0m
+  Timestamp [1m2025-02-23 20:29:14[0m
+[1m  45[0m[1m vulnerabilities reported[0m
+[1m  0[0m[1m vulnerabilities ignored[0m
+
++==============================================================================+
+ [1mVULNERABILITIES REPORTED[0m 
++==============================================================================+
+
+[31m-> Vulnerability found in starlette version 0.27.0[0m
+[1m   Vulnerability ID: [0m68094
+[1m   Affected spec: [0m<=0.36.1
+[1m   ADVISORY: [0mWhen using form data, `python-multipart` employs a
+   Regular Expression to parse the HTTP `Content-Type` header. This creates a
+   vulnerability where an attacker can send a specially crafted `Content-
+   Type` option, causing significant CPU resource consumption and
+   indefinitely stalling the server by locking the main event loop, rendering
+   the server unable to process further requests. This issue particularly
+   affects FastAPI servers parsing form data, leading to a Denial of Service
+   (DoS) condition when the number of malicious requests exceeds the number
+   of available server workers. However, this vulnerability does not impact
+   the processing of JSON data through the `/submit_json` endpoint. It is
+   specific to a defined set of versions of FastAPI and `python-multipart`
+   when handling form data.
+[1m   PVE-2024-68094[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/68094/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 68094 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in starlette version 0.27.0[0m
+[1m   Vulnerability ID: [0m73725
+[1m   Affected spec: [0m<0.40.0
+[1m   ADVISORY: [0mAffected versions of the Starlette framework are
+   vulnerable to Denial of Service (DoS) attacks due to the lack of
+   restrictions on multipart part sizes. The vulnerability resides in the
+   MultiPartParser class, which previously did not enforce size limits on
+   incoming data. This issue is mitigated by introducing a max_part_size
+   constraint and raises exceptions when limits are exceeded.
+[1m   CVE-2024-47874[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/73725/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 73725 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in scikit-learn version 1.3.0[0m
+[1m   Vulnerability ID: [0m71596
+[1m   Affected spec: [0m<1.5.0
+[1m   ADVISORY: [0mA sensitive data leakage vulnerability was identified in
+   affected versions of scikit-learn TfidfVectorizer. The vulnerability
+   arises from the unexpected storage of all tokens present in the training
+   data within the `stop_words_` attribute, rather than only storing the
+   subset of tokens required for the TF-IDF technique to function. This
+   behavior leads to the potential leakage of sensitive information, as the
+   `stop_words_` attribute could contain tokens that were meant to be
+   discarded and not stored, such as passwords or keys. The impact of this
+   vulnerability varies based on the nature of the data being processed by
+   the vectorizer.
+[1m   CVE-2024-5206[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/71596/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 71596 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in pyarrow version 12.0.1[0m
+[1m   Vulnerability ID: [0m65501
+[1m   Affected spec: [0m>=0.14.0,<=14.0.0
+[1m   ADVISORY: [0mDeserialization of untrusted data in IPC and Parquet
+   readers in PyArrow versions 0.14.0 to 14.0.0 allows arbitrary code
+   execution. An application is vulnerable if it reads Arrow IPC, Feather or
+   Parquet data from untrusted sources (for example user-supplied input
+   files). This vulnerability only affects PyArrow, not other Apache Arrow
+   implementations or bindings. It is recommended that users of PyArrow
+   upgrade to 14.0.1. Similarly, it is recommended that downstream libraries
+   upgrade their dependency requirements to PyArrow 14.0.1 or later. PyPI
+   packages are already available, and we hope that conda-forge packages will
+   be available soon. If it is not possible to upgrade, we provide a separate
+   package `pyarrow-hotfix` that disables the vulnerability on older PyArrow
+   versions. See  https://pypi.org/project/pyarrow-hotfix/  for instructions.
+[1m   CVE-2023-47248[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/65501/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 65501 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in pip version 23.0.1[0m
+[1m   Vulnerability ID: [0m62044
+[1m   Affected spec: [0m<23.3
+[1m   ADVISORY: [0mAffected versions of Pip are vulnerable to Command
+   Injection. When installing a package from a Mercurial VCS URL (ie "pip
+   install hg+...") with pip prior to v23.3, the specified Mercurial revision
+   could be used to inject arbitrary configuration options to the "hg clone"
+   call (ie "--config"). Controlling the Mercurial configuration can modify
+   how and which repository is installed. This vulnerability does not affect
+   users who aren't installing from Mercurial.
+[1m   CVE-2023-5752[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/62044/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 62044 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in mlflow version 2.6.0[0m
+[1m   Vulnerability ID: [0m68487
+[1m   Affected spec: [0m<2.10.0
+[1m   ADVISORY: [0mInsufficient sanitization in MLflow leads to XSS when
+   running an untrusted recipe. This issue leads to a client-side RCE when
+   running an untrusted recipe in Jupyter Notebook. The vulnerability stems
+   from lack of sanitization over template variables.
+[1m   CVE-2024-27132[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/68487/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 68487 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in mlflow version 2.6.0[0m
+[1m   Vulnerability ID: [0m68486
+[1m   Affected spec: [0m<2.10.0
+[1m   ADVISORY: [0mInsufficient sanitization in MLflow leads to XSS when
+   running a recipe that uses an untrusted dataset. This issue leads to a
+   client-side RCE when running the recipe in Jupyter Notebook. The
+   vulnerability stems from lack of sanitization over dataset table fields.
+[1m   CVE-2024-27133[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/68486/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 68486 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in mlflow version 2.6.0[0m
+[1m   Vulnerability ID: [0m71964
+[1m   Affected spec: [0m<2.10.0
+[1m   ADVISORY: [0mmlflow/mlflow is vulnerable to Local File Inclusion
+   (LFI) due to improper parsing of URIs, allowing attackers to bypass checks
+   and read arbitrary files on the system. The issue arises from the
+   'is_local_uri' function's failure to properly handle URIs with empty or
+   'file' schemes, leading to the misclassification of URIs as non-local.
+   Attackers can exploit this by crafting malicious model versions with
+   specially crafted 'source' parameters, enabling the reading of sensitive
+   files within at least two directory levels from the server's root.
+[1m   CVE-2024-3573[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/71964/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 71964 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in mlflow version 2.6.0[0m
+[1m   Vulnerability ID: [0m71965
+[1m   Affected spec: [0m<2.9.0
+[1m   ADVISORY: [0mA vulnerability in mlflow/mlflow allows for remote code
+   execution due to improper neutralization of special elements used in an OS
+   command ('Command Injection') within the
+   mlflow.data.http_dataset_source.py module. Specifically, when loading a
+   dataset from a source URL with an HTTP scheme, the filename extracted from
+   the Content-Disposition header or the URL path is used to generate the
+   final file path without proper sanitization. This flaw enables an attacker
+   to control the file path fully by utilizing path traversal or absolute
+   path techniques, such as tmp/poc.txt or /tmp/poc.txt, leading to arbitrary
+   file write. Exploiting this vulnerability could allow a malicious user to
+   execute commands on the vulnerable machine, potentially gaining access to
+   data and model information.
+[1m   CVE-2024-0520[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/71965/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 71965 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in mlflow version 2.6.0[0m
+[1m   Vulnerability ID: [0m62992
+[1m   Affected spec: [0m<2.9.0
+[1m   ADVISORY: [0mMLflow version 2.9.0 addresses a vulnerability that
+   previously allowed an attacker to overwrite any file on the server hosting
+   MLflow without any authentication.https://github.com/mlflow/mlflow/commit/
+   55c72d02380e8db8118595a4fdae7879cb7ac5bd
+[1m   CVE-2023-6018[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/62992/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 62992 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in mlflow version 2.6.0[0m
+[1m   Vulnerability ID: [0m71586
+[1m   Affected spec: [0m<2.12.1
+[1m   ADVISORY: [0mA broken access control vulnerability exists in
+   mlflow/mlflow affected versions, where low privilege users with only EDIT
+   permissions on an experiment can delete any artifacts. This issue arises
+   due to the lack of proper validation for DELETE requests by users with
+   EDIT permissions, allowing them to perform unauthorized deletions of
+   artifacts. The vulnerability specifically affects the handling of artifact
+   deletions within the application, as demonstrated by the ability of a low
+   privilege user to delete a directory inside an artifact using a DELETE
+   request, despite the official documentation stating that users with EDIT
+   permission can only read and update artifacts, not delete them.
+[1m   CVE-2024-4263[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/71586/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 71586 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in mlflow version 2.6.0[0m
+[1m   Vulnerability ID: [0m71585
+[1m   Affected spec: [0m<2.12.1
+[1m   ADVISORY: [0mA path traversal vulnerability exists in the
+   `_create_model_version()` function within `server/handlers.py` of the
+   mlflow/mlflow repository, due to improper validation of the `source`
+   parameter. Attackers can exploit this vulnerability by crafting a `source`
+   parameter that bypasses the
+   `_validate_non_local_source_contains_relative_paths(source)` function's
+   checks, allowing for arbitrary file read access on the server. The issue
+   arises from the handling of unquoted URL characters and the subsequent
+   misuse of the original `source` value for model version creation, leading
+   to the exposure of sensitive files when interacting with the `/model-
+   versions/get-artifact` handler.
+[1m   CVE-2024-1558[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/71585/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 71585 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in mlflow version 2.6.0[0m
+[1m   Vulnerability ID: [0m71963
+[1m   Affected spec: [0m<2.12.1
+[1m   ADVISORY: [0mA path traversal vulnerability exists in the
+   mlflow/mlflow repository due to improper handling of URL parameters. By
+   smuggling path traversal sequences using the ';' character in URLs,
+   attackers can manipulate the 'params' portion of the URL to gain
+   unauthorized access to files or directories. This vulnerability allows for
+   arbitrary data smuggling into the 'params' part of the URL, enabling
+   attacks similar to those described in previous reports but utilizing the
+   ';' character for parameter smuggling. Successful exploitation could lead
+   to unauthorized information disclosure or server compromise.
+[1m   CVE-2024-1593[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/71963/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 71963 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in mlflow version 2.6.0[0m
+[1m   Vulnerability ID: [0m71698
+[1m   Affected spec: [0m<2.12.1
+[1m   ADVISORY: [0mA path traversal vulnerability exists in mlflow/mlflow
+   affected versions, identified as a bypass for the previously addressed
+   CVE-2023-6909. The vulnerability arises from the application's handling of
+   artifact URLs, where a '#' character can be used to insert a path into the
+   fragment, effectively skipping validation. This allows an attacker to
+   construct a URL that, when processed, ignores the protocol scheme and uses
+   the provided path for filesystem access. As a result, an attacker can read
+   arbitrary files, including sensitive information such as SSH and cloud
+   keys, by exploiting the way the application converts the URL into a
+   filesystem path. The issue stems from insufficient validation of the
+   fragment portion of the URL, leading to arbitrary file read through path
+   traversal.
+[1m   CVE-2024-3848[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/71698/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 71698 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in mlflow version 2.6.0[0m
+[1m   Vulnerability ID: [0m67933
+[1m   Affected spec: [0m<2.12.1
+[1m   ADVISORY: [0mMlflow 2.12.0 has implemented a security patch to
+   address a critical Local File Read/Path Traversal vulnerability found in
+   the Model Registry.
+[1m   PVE-2024-67933[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/67933/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 67933 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in mlflow version 2.6.0[0m
+[1m   Vulnerability ID: [0m71582
+[1m   Affected spec: [0m<2.11.3
+[1m   ADVISORY: [0mAffected versions of Mlflow allow attackers to create
+   multiple models with the same name by exploiting URL encoding. This flaw
+   can lead to Denial of Service (DoS) as an authenticated user might not be
+   able to use the intended model, as it will open a different model each
+   time. Additionally, an attacker can exploit this vulnerability to perform
+   data model poisoning by creating a model with the same name, potentially
+   causing an authenticated user to become a victim by using the poisoned
+   model. The issue stems from inadequate validation of model names, allowing
+   for the creation of models with URL-encoded names that are treated as
+   distinct from their URL-decoded counterparts.
+[1m   CVE-2024-3099[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/71582/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 71582 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in mlflow version 2.6.0[0m
+[1m   Vulnerability ID: [0m71796
+[1m   Affected spec: [0m<2.11.3
+[1m   ADVISORY: [0mAffected versions of Mlflow are vulnerable to Local File
+   Inclusion (LFI). This vulnerability arises from the application's failure
+   to properly validate URI fragments for directory traversal sequences. An
+   attacker can exploit this flaw by manipulating the fragment part of the
+   URI to read arbitrary files on the local file system, including sensitive
+   files like '/etc/passwd'. The vulnerability is a bypass to a previous
+   patch that only addressed similar manipulation within the URI's query
+   string, highlighting the need for comprehensive validation of all parts of
+   a URI to prevent LFI attacks.
+[1m   CVE-2024-2928[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/71796/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 71796 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in mlflow version 2.6.0[0m
+[1m   Vulnerability ID: [0m62990
+[1m   Affected spec: [0m<2.8.1
+[1m   ADVISORY: [0mMLflow 2.8.1 includes a fix for CVE-2023-6015: Mlflow
+   allowed arbitrary files to be PUT onto the server.#NOTE: This
+   vulnerability affects only users of windows.https://huntr.com/bounties/43e
+   6fb72-676e-4670-a225-
+   15d6836f65d3https://github.com/mlflow/mlflow/commit/cf83dad4df26dd4a850622
+   fe8a51ccab1471a5e7
+[1m   CVE-2023-6015[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/62990/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 62990 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in mlflow version 2.6.0[0m
+[1m   Vulnerability ID: [0m71587
+[1m   Affected spec: [0m>=0.9.0
+[1m   ADVISORY: [0mDeserialization of untrusted data can occur in affected
+   versions of the MLflow platform, enabling a maliciously uploaded PyFunc
+   model to run arbitrary code on an end user’s system when interacted with.
+[1m   CVE-2024-37054[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/71587/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 71587 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in mlflow version 2.6.0[0m
+[1m   Vulnerability ID: [0m65216
+[1m   Affected spec: [0m>=0,<2.9.2
+[1m   ADVISORY: [0mPath Traversal: '\..\filename' in GitHub repository
+   mlflow/mlflow prior to 2.9.2.
+[1m   CVE-2023-6831[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/65216/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 65216 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in mlflow version 2.6.0[0m
+[1m   Vulnerability ID: [0m65219
+[1m   Affected spec: [0m>=0,<2.9.2
+[1m   ADVISORY: [0mA malicious user could use this issue to access internal
+   HTTP(s) servers and in the worst case (ie: aws instance) it could be abuse
+   to get a remote code execution on the victim machine.
+[1m   CVE-2023-6974[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/65219/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 65219 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in mlflow version 2.6.0[0m
+[1m   Vulnerability ID: [0m65217
+[1m   Affected spec: [0m>=0,<2.9.2
+[1m   ADVISORY: [0mPath Traversal: '\..\filename' in GitHub repository
+   mlflow/mlflow prior to 2.9.2.
+[1m   CVE-2023-6909[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/65217/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 65217 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in mlflow version 2.6.0[0m
+[1m   Vulnerability ID: [0m65220
+[1m   Affected spec: [0m>=0,<2.9.2
+[1m   ADVISORY: [0mA malicious user could use this issue to get command
+   execution on the vulnerable machine and get access to data & models
+   information.
+[1m   CVE-2023-6975[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/65220/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 65220 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in mlflow version 2.6.0[0m
+[1m   Vulnerability ID: [0m65221
+[1m   Affected spec: [0m>=0,<2.9.2
+[1m   ADVISORY: [0mThis vulnerability is capable of writing arbitrary files
+   into arbitrary locations on the remote filesystem in the context of the
+   server process.
+[1m   CVE-2023-6976[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/65221/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 65221 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in mlflow version 2.6.0[0m
+[1m   Vulnerability ID: [0m65218
+[1m   Affected spec: [0m>=0,<2.9.2
+[1m   ADVISORY: [0mwith only one user interaction(download a malicious
+   config), attackers can gain full command execution on the victim system.
+[1m   CVE-2023-6940[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/65218/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 65218 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in mlflow version 2.6.0[0m
+[1m   Vulnerability ID: [0m62991
+[1m   Affected spec: [0m<2.8.0
+[1m   ADVISORY: [0mMLflow version 2.8.0 addresses a vulnerability that
+   previously allowed unauthorized users to create accounts, bypassing
+   authentication requirements. This issue was due to an incomplete fix for
+   CVE-2023-1177. Now, only administrators can create new users, mitigating
+   the risk of unauthorized account creation.https://github.com/mlflow/mlflow
+   /commit/32de2154ef9f946160e5dc01a4d8a449dd0bd259
+[1m   CVE-2023-6014[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/62991/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 62991 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in mlflow version 2.6.0[0m
+[1m   Vulnerability ID: [0m71578
+[1m   Affected spec: [0m>=1.1.0
+[1m   ADVISORY: [0mDeserialization of untrusted data can occur in versions
+   of the MLflow platform running version 1.1.0 or newer, enabling a
+   maliciously uploaded scikit-learn model to run arbitrary code on an end
+   user’s system when interacted with.
+[1m   CVE-2024-37053[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/71578/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 71578 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in mlflow version 2.6.0[0m
+[1m   Vulnerability ID: [0m71577
+[1m   Affected spec: [0m>=1.1.0
+[1m   ADVISORY: [0mDeserialization of untrusted data can occur in versions
+   of the MLflow platform running version 1.1.0 or newer, enabling a
+   maliciously uploaded scikit-learn model to run arbitrary code on an end
+   user’s system when interacted with.
+[1m   CVE-2024-37052[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/71577/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 71577 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in mlflow version 2.6.0[0m
+[1m   Vulnerability ID: [0m71584
+[1m   Affected spec: [0m>=1.23.0
+[1m   ADVISORY: [0mDeserialization of untrusted data can occur in versions
+   of the MLflow platform affected versions, enabling a maliciously uploaded
+   LightGBM scikit-learn model to run arbitrary code on an end user’s system
+   when interacted with.
+[1m   CVE-2024-37056[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/71584/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 71584 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in mlflow version 2.6.0[0m
+[1m   Vulnerability ID: [0m65222
+[1m   Affected spec: [0m>=1.0.0,<2.10.0
+[1m   ADVISORY: [0mThis vulnerability enables malicious users to read
+   sensitive files on the server.https://github.com/mlflow/mlflow/commit/4bd7
+   f27c810ba7487d53ed5ef1038fca0f8dc28c
+[1m   CVE-2023-6977[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/65222/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 65222 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in mlflow version 2.6.0[0m
+[1m   Vulnerability ID: [0m74438
+[1m   Affected spec: [0m<2.16.0
+[1m   ADVISORY: [0mAffected versions of MLflow are vulnerable to Incorrect
+   Default Permissions (CWE-276). During installation, file permissions are
+   set to allow any user to modify installed files, enabling unauthorized
+   users to alter MLflow’s functionality or execute arbitrary code. This
+   vulnerability can be exploited by local attackers with system access to
+   compromise the integrity and security of the MLflow deployment.
+[1m   CVE-2024-27134[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/74438/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 74438 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in mlflow version 2.6.0[0m
+[1m   Vulnerability ID: [0m71579
+[1m   Affected spec: [0m>=1.27.0
+[1m   ADVISORY: [0mDeserialization of untrusted data can occur in versions
+   of the MLflow platform running version 1.27.0 or newer, enabling a
+   maliciously crafted Recipe to execute arbitrary code on an end user’s
+   system when run.
+[1m   CVE-2024-37060[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/71579/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 71579 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in mlflow version 2.6.0[0m
+[1m   Vulnerability ID: [0m72394
+[1m   Affected spec: [0m<2.15.0
+[1m   ADVISORY: [0mAffected versions of LangChain have a callback injection
+   issue with asynchronous and streaming requests. The current autologging
+   method injects the MLflow callback into the user's callback list, causing
+   bugs such as failure with predict_stream, ainvoke, astream, and abatch
+   calls when configurations are specified. Cleanup scripts execute
+   prematurely, preventing proper trace generation and sometimes failing to
+   clean up callbacks. The updated logic now creates copies of callback lists
+   to avoid mutation and maintain original callbacks
+[1m   PVE-2024-72394[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/72394/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 72394 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in mlflow version 2.6.0[0m
+[1m   Vulnerability ID: [0m71692
+[1m   Affected spec: [0m>=2.0.0rc0
+[1m   ADVISORY: [0mDeserialization of untrusted data can occur in affected
+   versions of the MLflow platform, enabling a maliciously uploaded
+   Tensorflow model to run arbitrary code on an end user’s system when
+   interacted with.
+[1m   CVE-2024-37057[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/71692/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 71692 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in mlflow version 2.6.0[0m
+[1m   Vulnerability ID: [0m71691
+[1m   Affected spec: [0m>=0.5.0
+[1m   ADVISORY: [0mDeserialization of untrusted data can occur in affected
+   versions of the MLflow platform running, enabling a maliciously uploaded
+   PyTorch model to run arbitrary code on an end user’s system when
+   interacted with.
+[1m   CVE-2024-37059[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/71691/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 71691 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in mlflow version 2.6.0[0m
+[1m   Vulnerability ID: [0m71795
+[1m   Affected spec: [0m<=2.9.2
+[1m   ADVISORY: [0mA path traversal vulnerability exists in the
+   mlflow/mlflow repository, specifically within the handling of the
+   `artifact_location` parameter when creating an experiment. Attackers can
+   exploit this vulnerability by using a fragment component `#` in the
+   artifact location URI to read arbitrary files on the server in the context
+   of the server's process. This issue is similar to CVE-2023-6909 but
+   utilizes a different component of the URI to achieve the same effect.
+[1m   CVE-2024-1594[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/71795/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 71795 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in mlflow version 2.6.0[0m
+[1m   Vulnerability ID: [0m62993
+[1m   Affected spec: [0m<=2.8.1
+[1m   ADVISORY: [0mAn issue in MLFlow versions 2.8.1 and before allows a
+   remote attacker to obtain sensitive information via a crafted request to
+   REST API.https://github.com/mlflow/mlflow/pull/10526/commits/e4f71857f9f50
+   13e240538656ba1171a7419db6d
+[1m   CVE-2023-43472[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/62993/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 62993 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in mlflow version 2.6.0[0m
+[1m   Vulnerability ID: [0m71581
+[1m   Affected spec: [0m>=1.11.0,<2.12.1
+[1m   ADVISORY: [0mRemote Code Execution can occur in versions of the
+   MLflow platform affected versions, enabling a maliciously crafted
+   MLproject to execute arbitrary code on an end user’s system when run.
+[1m   CVE-2024-37061[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/71581/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 71581 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in mlflow version 2.6.0[0m
+[1m   Vulnerability ID: [0m62995
+[1m   Affected spec: [0m<2.9.2
+[1m   ADVISORY: [0mmlflow 2.9.2 addresses an Improper Neutralization of
+   Special Elements Used in a Template Engine.https://github.com/mlflow/mlflo
+   w/pull/10640/commits/930eb808c6394360d1aa217a9eaa33891c1d244d
+[1m   CVE-2023-6709[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/62995/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 62995 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in mlflow version 2.6.0[0m
+[1m   Vulnerability ID: [0m62996
+[1m   Affected spec: [0m<2.9.2
+[1m   ADVISORY: [0mMlflow 2.9.2 fixes for Windows Path Traversal
+   attack.#NOTE: This vulnerability affects only users of Windows.https://git
+   hub.com/mlflow/mlflow/pull/10647/commits/63dfb885aec22d07b4452828e7fa3e532
+   cc945c4
+[1m   CVE-2023-6753[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/62996/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 62996 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in mlflow version 2.6.0[0m
+[1m   Vulnerability ID: [0m62994
+[1m   Affected spec: [0m<2.9.2
+[1m   ADVISORY: [0mmlflow 2.9.2 addresses a vulnerability that allows an
+   attacker to inject malicious code into the “Content-Type” header of a POST
+   request, which is then reflected back to the user without proper
+   sanitization or escaping.https://github.com/mlflow/mlflow/commit/28ff3f949
+   94941e038f2172c6484b65dc4db6ca1
+[1m   CVE-2023-6568[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/62994/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 62994 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in mlflow version 2.6.0[0m
+[1m   Vulnerability ID: [0m71588
+[1m   Affected spec: [0m<2.9.2
+[1m   ADVISORY: [0mA path traversal vulnerability exists in the
+   mlflow/mlflow repository, specifically within the artifact deletion
+   functionality. Attackers can bypass path validation by exploiting the
+   double decoding process in the `_delete_artifact_mlflow_artifacts` handler
+   and `local_file_uri_to_path` function, allowing for the deletion of
+   arbitrary directories on the server's filesystem. This vulnerability is
+   due to an extra unquote operation in the `delete_artifacts` function of
+   `local_artifact_repo.py`, which fails to sanitize user-supplied paths
+   properly. The issue is present on affected versions, despite attempts to
+   fix a similar issue in CVE-2023-6831.
+[1m   CVE-2024-1560[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/71588/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 71588 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in mlflow version 2.6.0[0m
+[1m   Vulnerability ID: [0m71693
+[1m   Affected spec: [0m>=1.24.0
+[1m   ADVISORY: [0mDeserialization of untrusted data can occur in affected
+   versions of the MLflow platform, enabling a maliciously uploaded pmdarima
+   model to run arbitrary code on an end user’s system when interacted with.
+[1m   CVE-2024-37055[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/71693/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 71693 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in gunicorn version 21.2.0[0m
+[1m   Vulnerability ID: [0m71600
+[1m   Affected spec: [0m<22.0.0
+[1m   ADVISORY: [0mGunicorn fails to properly validate Transfer-Encoding
+   headers, leading to HTTP Request Smuggling (HRS) vulnerabilities. By
+   crafting requests with conflicting Transfer-Encoding headers, attackers
+   can bypass security restrictions and access restricted endpoints. This
+   issue is due to Gunicorn's handling of Transfer-Encoding headers, where it
+   incorrectly processes requests with multiple, conflicting Transfer-
+   Encoding headers, treating them as chunked regardless of the final
+   encoding specified. This vulnerability allows for a range of attacks
+   including cache poisoning, session manipulation, and data exposure.
+[1m   CVE-2024-1135[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/71600/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 71600 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+[31m-> Vulnerability found in black version 23.7.0[0m
+[1m   Vulnerability ID: [0m66742
+[1m   Affected spec: [0m<24.3.0
+[1m   ADVISORY: [0mAffected versions of Black are vulnerable to Regular
+   Expression Denial of Service (ReDoS) via the
+   lines_with_leading_tabs_expanded function in the strings.py file. An
+   attacker could exploit this vulnerability by crafting a malicious input
+   that causes a denial of service.
+[1m   CVE-2024-21503[0m
+[1m   For more information about this vulnerability, visit
+   [0mhttps://data.safetycli.com/v/66742/97c[0m
+   To ignore this vulnerability, use PyUp vulnerability id 66742 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
++==============================================================================+
+   [32m[1mREMEDIATIONS[0m
+
+  45 vulnerabilities were reported in 7 packages. For detailed remediation & 
+  fix recommendations, upgrade to a commercial license. 
+
++==============================================================================+
+
+ Scan was completed. 45 vulnerabilities were reported. 
+
++==============================================================================+[0m
+
+
+[33m[1m+===========================================================================================================================================================================================+[0m
+
+
+[31m[1mDEPRECATED: [0m[33m[1mthis command (`check`) has been DEPRECATED, and will be unsupported beyond 01 June 2024.[0m
+
+
+[32mWe highly encourage switching to the new [0m[32m[1m`scan`[0m[32m command which is easier to use, more powerful, and can be set up to mimic the deprecated command if required.[0m
+
+
+[33m[1m+===========================================================================================================================================================================================+[0m
+
+

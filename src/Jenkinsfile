@@ -54,7 +54,7 @@ pipeline {
                     sh '''
                         . ${VENV_PATH}/bin/activate
                         pip install flake8 black pylint isort  # Installer les outils de qualité de code
-                        flake8 src/ --config=projet_final/.flake8 --output-file=flake8_report.txt  # Analyse avec flake8
+                        flake8 src/ --config=.flake8 --output-file=flake8_report.txt  # Analyse avec flake8
                         black --check src/ --diff > black_report.txt  # Vérification du formatage avec black
                         pylint src/ --output=pylint_report.txt  # Analyse avec pylint
                         isort --check-only src/ --diff > isort_report.txt  # Vérification de l'ordre des imports avec isort
