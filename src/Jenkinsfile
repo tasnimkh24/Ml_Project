@@ -2,22 +2,24 @@ pipeline {
     agent any
 
     environment {
-        GITHUB_TOKEN = credentials('github-token')
-        PYTHON = 'python3.10'
-        VENV_PATH = '/tmp/venv'
+        GITHUB_TOKEN = credentials('github-token')  // Token GitHub pour le checkout
+        PYTHON = 'python3.10'                       // Version de Python
+        VENV_PATH = '/tmp/venv'                     // Chemin de l'environnement virtuel
     }
 
     stages {
+        // Étape 1: Checkout du code
         stage('Checkout') {
             steps {
                 git branch: 'main', url: "https://${GITHUB_TOKEN}:x-oauth-basic@github.com/tasnimkh24/Ml_Project.git"
             }
         }
 
+        // Étape 2: Installation des dépendances
         stage('Install Dependencies') {
             steps {
-                sh '${PYTHON} -m venv ${VENV_PATH}'
                 sh '''
+                    ${PYTHON} -m venv ${VENV_PATH}
                     . ${VENV_PATH}/bin/activate
                     pip install --upgrade pip
                     pip install -r requirements.txt
@@ -26,14 +28,15 @@ pipeline {
             }
         }
 
+        // Étape 3: Tests de sécurité (Bandit et Safety)
         stage('Security Tests') {
             steps {
-                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                     sh '''
                         . ${VENV_PATH}/bin/activate
-                        pip install "safety<2.0.0"  # Utiliser une version compatible de safety
-                        bandit -r src/ -o bandit_report.txt
-                        safety check > safety_report.txt
+                        pip install bandit safety  # Installer Bandit et Safety
+                        bandit -r src/ -o bandit_report.txt  # Analyse de sécurité avec Bandit
+                        safety check --full-report > safety_report.txt  # Vérification des vulnérabilités des dépendances
                     '''
                 }
             }
@@ -44,16 +47,17 @@ pipeline {
             }
         }
 
+        // Étape 4: Tests de qualité de code (flake8, black, pylint, isort)
         stage('Code Quality') {
             steps {
-                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                     sh '''
                         . ${VENV_PATH}/bin/activate
-                        pip install flake8 black pylint isort
-                        flake8 src/ --config=.flake8
-                        black --check src/
-                        pylint src/
-                        isort --check-only src/
+                        pip install flake8 black pylint isort  # Installer les outils de qualité de code
+                        flake8 src/ --config=.flake8 --output-file=flake8_report.txt  # Analyse avec flake8
+                        black --check src/ --diff > black_report.txt  # Vérification du formatage avec black
+                        pylint src/ --output=pylint_report.txt  # Analyse avec pylint
+                        isort --check-only src/ --diff > isort_report.txt  # Vérification de l'ordre des imports avec isort
                     '''
                 }
             }
@@ -64,22 +68,25 @@ pipeline {
             }
         }
 
+        // Étape 5: Tests unitaires avec pytest
         stage('Unit Tests') {
             steps {
-                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                     sh '''
                         . ${VENV_PATH}/bin/activate
-                        pytest --cov=src test/  # Exécuter les tests dans le dossier tests/
+                        export PYTHONPATH=${WORKSPACE}  # Ajouter le répertoire de travail au PYTHONPATH
+                        pytest --cov=src --cov-report=xml --junitxml=pytest_report.xml test/  # Exécuter les tests unitaires
                     '''
                 }
             }
             post {
                 always {
-                    archiveArtifacts artifacts: 'pytest_report.txt', allowEmptyArchive: true
+                    archiveArtifacts artifacts: 'pytest_report.xml, coverage.xml', allowEmptyArchive: true
                 }
             }
         }
 
+        // Étape 6: Préparation des données
         stage('Prepare Data') {
             steps {
                 sh '''
@@ -89,6 +96,7 @@ pipeline {
             }
         }
 
+        // Étape 7: Entraînement du modèle
         stage('Train Model') {
             steps {
                 sh '''
@@ -98,6 +106,7 @@ pipeline {
             }
         }
 
+        // Étape 8: Évaluation du modèle
         stage('Evaluate Model') {
             steps {
                 sh '''
@@ -114,6 +123,9 @@ pipeline {
         }
         success {
             echo '✅ Pipeline succeeded!'
+        }
+        unstable {
+            echo '⚠️ Pipeline unstable! Check security or quality issues.'
         }
     }
 }

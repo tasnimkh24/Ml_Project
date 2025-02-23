@@ -1,0 +1,9 @@
+# bandit.yaml
+targets:
+  - src/
+
+skips:
+  - B101  # Ignorer les avertissements liés à l'utilisation de `assert`
+
+tests:
+  - B102  # Activer uniquement le test pour les vulnérabilités de type "exec"
