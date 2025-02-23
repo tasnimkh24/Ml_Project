@@ -35,7 +35,13 @@ def main(train_path, test_path, prepare_only_flag=False, predict_flag=False, tra
         prepare_only(train_path, test_path)
     elif predict_flag:
         print("\n🎯 Running Prediction Mode...")
-        # Prediction logic here
+        # Load the model
+        model = load_model("gbm_model.joblib")  # Correct filename (relative to models/)
+        # Generate predictions
+        predictions = predict(model, test_path)
+        # Save or display predictions
+        print("✅ Predictions generated successfully!")
+        print(predictions)  # Or save to a file
     elif train_flag:
         X_train, X_test, y_train, y_test, X_cluster, y_cluster = prepare_data(train_path, test_path)
         print("\n✅ Data Preparation Completed!")
@@ -53,11 +59,11 @@ def main(train_path, test_path, prepare_only_flag=False, predict_flag=False, tra
         evaluate_only(train_path, test_path)
     else:
         print("❌ No action specified. Use --prepare, --train, --evaluate, --predict, or --deploy.")
-
+        
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Test the prepare_data function")
-    parser.add_argument("--train-data", type=str, required=not ('--deploy' in sys.argv or '-d' in sys.argv), help="Path to the training CSV file")
-    parser.add_argument("--test", type=str, required=not ('--deploy' in sys.argv or '-d' in sys.argv), help="Path to the test CSV file")
+    parser.add_argument("--train-data", type=str, required=False, help="Path to the training CSV file")
+    parser.add_argument("--test", type=str, required=True, help="Path to the test CSV file")
     parser.add_argument("--evaluate", action="store_true", help="Evaluate the model")
     parser.add_argument("--prepare", action="store_true", help="Only prepare the data, don't train the model")
     parser.add_argument("--predict", action="store_true", help="Run a prediction using a trained model")
@@ -65,9 +71,9 @@ if __name__ == "__main__":
     parser.add_argument("--deploy", action="store_true", help="Deploy the model")
 
     args = parser.parse_args()
-    
-    # Vérifier que train-data et test sont requis sauf si on fait uniquement une prédiction ou un déploiement
-    if not (args.predict or args.deploy) and (args.train_data is None or args.test is None):
-        parser.error("❌ Les arguments --train-data et --test sont requis sauf si --predict ou --deploy est utilisé.")
+
+    # Check if --train-data is required
+    if (args.train or args.prepare or args.evaluate) and not args.train_data:
+        parser.error("❌ --train-data is required for --train, --prepare, or --evaluate.")
 
     main(args.train_data, args.test, prepare_only_flag=args.prepare, predict_flag=args.predict, train_flag=args.train, deploy_flag=args.deploy, evaluate_flag=args.evaluate)

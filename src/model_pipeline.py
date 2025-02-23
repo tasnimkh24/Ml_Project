@@ -17,9 +17,17 @@ import numpy as np
 import sklearn
 import logging
 
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.feature_selection import f_classif
+from imblearn.over_sampling import SMOTE
+from sklearn.model_selection import train_test_split
+import joblib
+
 def prepare_data(train_path, test_path):
     """
     Prepare the dataset for training and testing.
+    Returns:
+        X_train_scaled, X_test_scaled, y_train, y_test, X_cluster_scaled, y_cluster, preprocessing_objects
     """
     # 1. Load data
     df_train = pd.read_csv(train_path)
@@ -89,8 +97,19 @@ def prepare_data(train_path, test_path):
     X_test_scaled = scaler.transform(X_test)
     X_cluster_scaled = scaler.fit_transform(X_cluster)
 
-    return X_train_scaled, X_test_scaled, y_train, y_test, X_cluster_scaled, y_cluster
+     # Save preprocessing objects
+    preprocessing_objects = {
+        'label_encoder': label_encoder,
+        'scaler': scaler,
+        'columns_to_drop': columns_to_drop,
+        'target_mean': target_mean
+    }
+    joblib.dump(preprocessing_objects, "models/preprocessing_objects.joblib")
 
+    # Save training columns
+    joblib.dump(X.columns.tolist(), "models/training_columns.joblib")
+
+    return X_train_scaled, X_test_scaled, y_train, y_test, X_cluster_scaled, y_cluster
 
 def train_model(X_train, y_train):
     """
@@ -168,10 +187,32 @@ def save_model(model, filename="gbm_model.joblib"):
     joblib.dump(model, model_path)
     logger.info(f"\n💾 Model saved to '{model_path}' and logged as an artifact.")
 
+import os
+import joblib
+import numpy as np
+import sklearn
+from logging import Logger
+
+logger = Logger(__name__)
+
 def load_model(filename="gbm_model.joblib"):
-    # Chemin relatif vers le dossier models/
-    model_path = os.path.join("models", filename)
-    # Vérifiez si le fichier existe
+    """
+    Load a trained model from the specified filename.
+    
+    Args:
+        filename (str): Name of the model file (default: "gbm_model.joblib").
+    
+    Returns:
+        model: The loaded model.
+    """
+    # If filename already includes the models/ directory, use it as is
+    if filename.startswith("models/"):
+        model_path = filename
+    else:
+        # Otherwise, construct the path relative to the models/ directory
+        model_path = os.path.join("models", filename)
+    
+    # Check if the file exists
     if not os.path.exists(model_path):
         raise FileNotFoundError(f"Model file not found: {model_path}")
     
@@ -180,7 +221,7 @@ def load_model(filename="gbm_model.joblib"):
     logger.info(f"joblib version: {joblib.__version__}")
     logger.info(f"scikit-learn version: {sklearn.__version__}")
 
-    # Chargez le modèle
+    # Load the model
     logger.info(f"Loading model from: {model_path}")
     try:
         model = joblib.load(model_path)
@@ -189,11 +230,57 @@ def load_model(filename="gbm_model.joblib"):
     except Exception as e:
         logger.error(f"Error loading model: {e}")
         raise
+def predict(model, test_path):
+    """
+    Generate predictions using the trained model.
+    """
+    try:
+        # Load test data
+        test_data = pd.read_csv(test_path)
 
-def predict(features):
-    # Chargez le modèle depuis le dossier models/
-    model = load_model("gbm_model.joblib")
-    # Faites une prédiction
-    prediction = model.predict(features)
-    logger.info(f"\n✅ Prediction Completed! Prediction: {prediction}")
-    return prediction
+        # Load preprocessing objects
+        preprocessing_objects = joblib.load("models/preprocessing_objects.joblib")
+        label_encoder = preprocessing_objects['label_encoder']
+        scaler = preprocessing_objects['scaler']
+        columns_to_drop = preprocessing_objects['columns_to_drop']
+        target_mean = preprocessing_objects['target_mean']
+
+        # Drop the target column if it exists
+        if 'Churn' in test_data.columns:
+            test_data = test_data.drop(columns=['Churn'])
+
+        # Preprocess test data
+        # 1. Convert binary categorical variables
+        test_data['International plan'] = test_data['International plan'].map({'Yes': 1, 'No': 0})
+        test_data['Voice mail plan'] = test_data['Voice mail plan'].map({'Yes': 1, 'No': 0})
+
+        # 2. Target Encoding for 'State'
+        test_data['STATE_TargetMean'] = test_data['State'].map(target_mean)
+
+        # 3. Label Encoding for 'State'
+        test_data['STATE_Label'] = label_encoder.transform(test_data['State'])
+        test_data = test_data.drop(columns=['State'])
+
+        # 4. Drop non-significant columns
+        test_data = test_data.drop(columns=columns_to_drop, errors='ignore')
+
+        # 5. Ensure the test data has the same columns as the training data
+        # Load the training data columns from preprocessing objects
+        training_columns = joblib.load("models/training_columns.joblib")
+        test_data = test_data[training_columns]
+
+        # 6. Normalize data
+        test_data_scaled = scaler.transform(test_data)
+
+        # Generate predictions
+        predictions = model.predict(test_data_scaled)
+        print("✅ Predictions generated successfully!")
+
+        # Save predictions to a file
+        pd.DataFrame(predictions, columns=["predictions"]).to_csv("predictions.csv", index=False)
+        print("✅ Predictions saved to predictions.csv!")
+
+        return predictions
+    except Exception as e:
+        print(f"❌ Error generating predictions: {e}")
+        raise
