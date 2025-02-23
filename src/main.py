@@ -17,7 +17,18 @@ def deploy_model():
     # Add deployment logic here (e.g., save to a production environment, deploy to an API, etc.)
     print("✅ Model deployed successfully!")
 
-def main(train_path, test_path, prepare_only_flag=False, predict_flag=False, train_flag=False, deploy_flag=False):
+def evaluate_only(train_path, test_path):
+    # Chargez le modèle depuis le dossier models/
+    model = load_model("gbm_model.joblib")
+    # Préparez les données
+    X_train, X_test, y_train, y_test, X_cluster, y_cluster = prepare_data(train_path, test_path)
+    print("\n✅ Data Preparation Completed!")
+    # Évaluez le modèle
+    print("\n📊 Evaluating the model...")
+    evaluate_model(model, X_test, y_test)
+    print("✅ Model evaluation successful!")
+    
+def main(train_path, test_path, prepare_only_flag=False, predict_flag=False, train_flag=False, deploy_flag=False, evaluate_flag=False):
     if deploy_flag:
         deploy_model()
     elif prepare_only_flag:
@@ -38,6 +49,8 @@ def main(train_path, test_path, prepare_only_flag=False, predict_flag=False, tra
         print("\n📊 Evaluating the model...")
         evaluate_model(model, X_test, y_test)
         print("✅ Model evaluation successful!")
+    elif evaluate_flag:
+        evaluate_only(train_path, test_path)
     else:
         print("❌ No action specified. Use --prepare, --train, --evaluate, --predict, or --deploy.")
 
@@ -57,4 +70,4 @@ if __name__ == "__main__":
     if not (args.predict or args.deploy) and (args.train_data is None or args.test is None):
         parser.error("❌ Les arguments --train-data et --test sont requis sauf si --predict ou --deploy est utilisé.")
 
-    main(args.train_data, args.test, prepare_only_flag=args.prepare, predict_flag=args.predict, train_flag=args.train, deploy_flag=args.deploy)
+    main(args.train_data, args.test, prepare_only_flag=args.prepare, predict_flag=args.predict, train_flag=args.train, deploy_flag=args.deploy, evaluate_flag=args.evaluate)

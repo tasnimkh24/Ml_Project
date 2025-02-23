@@ -149,21 +149,33 @@ def evaluate_model(model, X_test, y_test):
     print(f"📊 Confusion Matrix:\n{cm}")
 
 
-def save_model(model, filename="gbm_model.joblib"):
-   
-    joblib.dump(model, filename)
-    print(f"\n💾 Model saved to '{filename}' and logged as an artifact.")
+import os
+import joblib
 
+def save_model(model, filename="gbm_model.joblib"):
+    # Chemin relatif vers le dossier models/
+    model_path = os.path.join("models", filename)
+    # Créez le dossier models/ s'il n'existe pas
+    os.makedirs("models", exist_ok=True)
+    # Sauvegardez le modèle
+    joblib.dump(model, model_path)
+    print(f"\n💾 Model saved to '{model_path}' and logged as an artifact.")
 
 def load_model(filename="gbm_model.joblib"):
-    """
-    Load a saved model.
-    """
-    model = joblib.load(filename)
-    print(f"\n📂 Model loaded from '{filename}'")
+    # Chemin relatif vers le dossier models/
+    model_path = os.path.join("models", filename)
+    # Vérifiez si le fichier existe
+    if not os.path.exists(model_path):
+        raise FileNotFoundError(f"Model file not found: {model_path}")
+    # Chargez le modèle
+    model = joblib.load(model_path)
+    print(f"\n📂 Model loaded from '{model_path}'")
     return model
+
 def predict(features):
-    model = joblib.load("gbm_model.joblib")
+    # Chargez le modèle depuis le dossier models/
+    model = load_model("gbm_model.joblib")
+    # Faites une prédiction
     prediction = model.predict(features)
     print(f"\n✅ Prediction Completed! Prediction: {prediction}")
     return prediction
