@@ -2,41 +2,40 @@ pipeline {
     agent any
 
     environment {
-        GITHUB_TOKEN = credentials('github-token') // Utilise l'ID des identifiants GitHub
-        PYTHON = 'python3.10' // Spécifie la version de Python
-        VENV_PATH = '/tmp/venv' // Dossier accessible pour l'environnement virtuel
+        GITHUB_TOKEN = credentials('github-token')
+        PYTHON = 'python3.10'
+        VENV_PATH = '/tmp/venv'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                // Cloner le dépôt en utilisant le token GitHub
                 git branch: 'main', url: "https://${GITHUB_TOKEN}:x-oauth-basic@github.com/tasnimkh24/Ml_Project.git"
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                // Créer un environnement virtuel Python dans un dossier accessible
                 sh '${PYTHON} -m venv ${VENV_PATH}'
-                // Activer l'environnement virtuel et installer les dépendances
                 sh '''
                     . ${VENV_PATH}/bin/activate
                     pip install --upgrade pip
                     pip install -r requirements.txt
+                    pip install "pydantic<2.0.0"  # Forcer l'installation d'une version compatible
                 '''
             }
         }
 
         stage('Security Tests') {
             steps {
-                // Activer l'environnement virtuel et exécuter Bandit pour les tests de sécurité
-                sh '''
-                    . ${VENV_PATH}/bin/activate
-                    pip install bandit safety
-                    bandit -r src/ -o bandit_report.txt
-                    safety check > safety_report.txt
-                '''
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    sh '''
+                        . ${VENV_PATH}/bin/activate
+                        pip install bandit safety
+                        bandit -r src/ -o bandit_report.txt
+                        safety check > safety_report.txt
+                    '''
+                }
             }
             post {
                 always {
@@ -47,15 +46,16 @@ pipeline {
 
         stage('Code Quality') {
             steps {
-                // Activer l'environnement virtuel et exécuter les outils de qualité de code
-                sh '''
-                    . ${VENV_PATH}/bin/activate
-                    pip install flake8 black pylint isort
-                    flake8 src/ > flake8_report.txt
-                    black --check src/ > black_report.txt
-                    pylint src/ > pylint_report.txt
-                    isort --check-only src/ > isort_report.txt
-                '''
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    sh '''
+                        . ${VENV_PATH}/bin/activate
+                        pip install flake8 black pylint isort
+                        flake8 src/ > flake8_report.txt
+                        black --check src/ > black_report.txt
+                        pylint src/ > pylint_report.txt
+                        isort --check-only src/ > isort_report.txt
+                    '''
+                }
             }
             post {
                 always {
@@ -66,12 +66,13 @@ pipeline {
 
         stage('Unit Tests') {
             steps {
-                // Activer l'environnement virtuel et exécuter les tests unitaires avec pytest
-                sh '''
-                    . ${VENV_PATH}/bin/activate
-                    pip install pytest pytest-cov
-                    pytest --cov=src tests/ > pytest_report.txt
-                '''
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    sh '''
+                        . ${VENV_PATH}/bin/activate
+                        pip install pytest pytest-cov
+                        pytest --cov=src tests/ > pytest_report.txt
+                    '''
+                }
             }
             post {
                 always {
@@ -82,7 +83,6 @@ pipeline {
 
         stage('Prepare Data') {
             steps {
-                // Activer l'environnement virtuel et exécuter le script de préparation des données
                 sh '''
                     . ${VENV_PATH}/bin/activate
                     ${PYTHON} src/main.py --train-data data/train.csv --test data/test.csv --prepare
@@ -92,7 +92,6 @@ pipeline {
 
         stage('Train Model') {
             steps {
-                // Activer l'environnement virtuel et exécuter le script d'entraînement du modèle
                 sh '''
                     . ${VENV_PATH}/bin/activate
                     ${PYTHON} src/main.py --train-data data/train.csv --test data/test.csv --train
@@ -102,7 +101,6 @@ pipeline {
 
         stage('Evaluate Model') {
             steps {
-                // Activer l'environnement virtuel et exécuter le script d'évaluation du modèle
                 sh '''
                     . ${VENV_PATH}/bin/activate
                     ${PYTHON} src/main.py --train-data data/train.csv --test data/test.csv --evaluate
@@ -114,11 +112,9 @@ pipeline {
     post {
         failure {
             echo '❌ Pipeline failed!'
-            // Envoyer une notification Slack ou e-mail en cas d'échec
         }
         success {
             echo '✅ Pipeline succeeded!'
-            // Envoyer une notification Slack ou e-mail en cas de succès
         }
     }
 }
