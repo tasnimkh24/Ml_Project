@@ -28,6 +28,58 @@ pipeline {
             }
         }
 
+        stage('Security Tests') {
+            steps {
+                // Activer l'environnement virtuel et exécuter Bandit pour les tests de sécurité
+                sh '''
+                    . ${VENV_PATH}/bin/activate
+                    pip install bandit safety
+                    bandit -r src/ -o bandit_report.txt
+                    safety check > safety_report.txt
+                '''
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: 'bandit_report.txt, safety_report.txt', allowEmptyArchive: true
+                }
+            }
+        }
+
+        stage('Code Quality') {
+            steps {
+                // Activer l'environnement virtuel et exécuter les outils de qualité de code
+                sh '''
+                    . ${VENV_PATH}/bin/activate
+                    pip install flake8 black pylint isort
+                    flake8 src/ > flake8_report.txt
+                    black --check src/ > black_report.txt
+                    pylint src/ > pylint_report.txt
+                    isort --check-only src/ > isort_report.txt
+                '''
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: 'flake8_report.txt, black_report.txt, pylint_report.txt, isort_report.txt', allowEmptyArchive: true
+                }
+            }
+        }
+
+        stage('Unit Tests') {
+            steps {
+                // Activer l'environnement virtuel et exécuter les tests unitaires avec pytest
+                sh '''
+                    . ${VENV_PATH}/bin/activate
+                    pip install pytest pytest-cov
+                    pytest --cov=src tests/ > pytest_report.txt
+                '''
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: 'pytest_report.txt', allowEmptyArchive: true
+                }
+            }
+        }
+
         stage('Prepare Data') {
             steps {
                 // Activer l'environnement virtuel et exécuter le script de préparation des données
@@ -62,9 +114,11 @@ pipeline {
     post {
         failure {
             echo '❌ Pipeline failed!'
+            // Envoyer une notification Slack ou e-mail en cas d'échec
         }
         success {
             echo '✅ Pipeline succeeded!'
+            // Envoyer une notification Slack ou e-mail en cas de succès
         }
     }
 }
