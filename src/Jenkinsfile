@@ -2,9 +2,9 @@ pipeline {
     agent any
 
     environment {
-        GITHUB_TOKEN = credentials('github-token')  // Token GitHub pour le checkout
-        PYTHON = 'python3.10'                       // Version de Python
-        VENV_PATH = '/tmp/venv'                     // Chemin de l'environnement virtuel
+        GITHUB_TOKEN = credentials('github-token')
+        PYTHON = 'python3.10'
+        VENV_PATH = '/tmp/venv'
     }
 
     stages {
