@@ -14,7 +14,7 @@ def prepare_only(train_path, test_path):
 
     # Enregistrer les données préparées dans MLflow
     with mlflow.start_run():
-        mlflow.log_artifact(train_path, "/tmp/mlflow/data")
+        mlflow.log_artifact(train_path, "data")
         mlflow.log_artifact(test_path, "data")
         print("✅ Données préparées enregistrées dans MLflow.")
 
