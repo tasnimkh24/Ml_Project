@@ -37,9 +37,9 @@ Markdown==3.7
 MarkupSafe==2.1.5
 matplotlib==3.7.1
 mccabe==0.7.0
-mlflow==2.6.0
+mlflow>=2.9.0
 mypy-extensions==1.0.0
-numpy>=1.23.5,<2.0.0 
+numpy>=1.23.5,<2.0
 oauthlib==3.2.2
 packaging==23.2
 pandas==2.0.3
@@ -50,7 +50,7 @@ pluggy==1.5.0
 protobuf==4.25.6
 pyarrow==12.0.1
 pycodestyle==2.10.0
-pydantic==1.10.21
+pydantic>=2.0
 pyflakes==3.0.1
 PyJWT==2.9.0
 pyparsing==3.1.4
