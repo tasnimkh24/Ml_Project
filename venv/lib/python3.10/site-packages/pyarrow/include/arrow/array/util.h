@@ -31,10 +31,6 @@
 
 namespace arrow {
 
-/// \defgroup array-factories Array factory functions
-///
-/// @{
-
 /// \brief Create a strongly-typed Array instance from generic ArrayData
 /// \param[in] data the array contents
 /// \return the resulting Array instance
@@ -69,8 +65,6 @@ ARROW_EXPORT
 Result<std::shared_ptr<Array>> MakeEmptyArray(std::shared_ptr<DataType> type,
                                               MemoryPool* pool = default_memory_pool());
 
-/// @}
-
 namespace internal {
 
 /// \brief Swap endian of each element in a generic ArrayData
@@ -79,11 +73,10 @@ namespace internal {
 /// are not swapped by this function and should be handled separately.
 ///
 /// \param[in] data the array contents
-/// \param[in] pool the memory pool to allocate memory from
 /// \return the resulting ArrayData whose elements were swapped
 ARROW_EXPORT
 Result<std::shared_ptr<ArrayData>> SwapEndianArrayData(
-    const std::shared_ptr<ArrayData>& data, MemoryPool* pool = default_memory_pool());
+    const std::shared_ptr<ArrayData>& data);
 
 /// Given a number of ArrayVectors, treat each ArrayVector as the
 /// chunks of a chunked array.  Then rechunk each ArrayVector such that

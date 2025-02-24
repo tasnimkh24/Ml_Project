@@ -21,6 +21,20 @@ from pyarrow.includes.common cimport *
 from pyarrow.includes.libarrow cimport *
 
 
+cdef extern from "arrow/acero/groupby.h" namespace \
+        "arrow::acero" nogil:
+    cdef cppclass CAggregate "arrow::compute::Aggregate":
+        c_string function
+        shared_ptr[CFunctionOptions] options
+        vector[CFieldRef] target
+        c_string name
+
+    CResult[shared_ptr[CTable]] CTableGroupBy "arrow::acero::TableGroupBy"(
+        shared_ptr[CTable] table,
+        vector[CAggregate] aggregates,
+        vector[CFieldRef] keys)
+
+
 cdef extern from "arrow/acero/options.h" namespace "arrow::acero" nogil:
     cdef enum CJoinType "arrow::acero::JoinType":
         CJoinType_LEFT_SEMI "arrow::acero::JoinType::LEFT_SEMI"
@@ -75,13 +89,6 @@ cdef extern from "arrow/acero/options.h" namespace "arrow::acero" nogil:
                              CExpression filter,
                              c_string output_suffix_for_left,
                              c_string output_suffix_for_right)
-
-    cdef struct CAsofJoinKeys "arrow::acero::AsofJoinNodeOptions::Keys":
-        CFieldRef on_key
-        vector[CFieldRef] by_key
-
-    cdef cppclass CAsofJoinNodeOptions "arrow::acero::AsofJoinNodeOptions"(CExecNodeOptions):
-        CAsofJoinNodeOptions(vector[CAsofJoinKeys] keys, int64_t tolerance)
 
 
 cdef extern from "arrow/acero/exec_plan.h" namespace "arrow::acero" nogil:

@@ -29,7 +29,8 @@
 #include "parquet/encryption/kms_client.h"
 #include "parquet/platform.h"
 
-namespace parquet::encryption {
+namespace parquet {
+namespace encryption {
 
 // This class will generate "key metadata" from "data encryption key" and "master key",
 // following these steps:
@@ -81,4 +82,5 @@ class PARQUET_EXPORT FileKeyWrapper {
   uint16_t key_counter_;
 };
 
-}  // namespace parquet::encryption
+}  // namespace encryption
+}  // namespace parquet

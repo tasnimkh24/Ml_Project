@@ -142,6 +142,7 @@ class ARROW_EXPORT AdaptiveUIntBuilder : public internal::AdaptiveIntBuilderBase
   explicit AdaptiveUIntBuilder(MemoryPool* pool = default_memory_pool())
       : AdaptiveUIntBuilder(sizeof(uint8_t), pool) {}
 
+  using ArrayBuilder::Advance;
   using internal::AdaptiveIntBuilderBase::Reset;
 
   /// Scalar append
@@ -181,6 +182,7 @@ class ARROW_EXPORT AdaptiveIntBuilder : public internal::AdaptiveIntBuilderBase 
                               int64_t alignment = kDefaultBufferAlignment)
       : AdaptiveIntBuilder(sizeof(uint8_t), pool, alignment) {}
 
+  using ArrayBuilder::Advance;
   using internal::AdaptiveIntBuilderBase::Reset;
 
   /// Scalar append

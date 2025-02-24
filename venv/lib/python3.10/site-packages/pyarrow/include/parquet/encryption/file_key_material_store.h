@@ -24,7 +24,8 @@
 #include "arrow/filesystem/filesystem.h"
 #include "parquet/platform.h"
 
-namespace parquet::encryption {
+namespace parquet {
+namespace encryption {
 
 /// Stores encryption key material outside the Parquet file, for example in a separate
 /// small file in the same folder. This is important for “key rotation”, when MEKs have to
@@ -54,4 +55,5 @@ class PARQUET_EXPORT FileKeyMaterialStore {
   virtual ~FileKeyMaterialStore() {}
 };
 
-}  // namespace parquet::encryption
+}  // namespace encryption
+}  // namespace parquet

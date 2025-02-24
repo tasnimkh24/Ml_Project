@@ -26,7 +26,8 @@
 #include "parquet/encryption/two_level_cache_with_expiration.h"
 #include "parquet/platform.h"
 
-namespace parquet::encryption {
+namespace parquet {
+namespace encryption {
 
 static constexpr uint64_t kCacheCleanPeriodForKeyRotation = 60 * 60;  // 1 hour
 
@@ -62,10 +63,10 @@ class PARQUET_EXPORT KeyToolkit {
   void RemoveCacheEntriesForAllTokens();
 
   void RegisterKmsClientFactory(std::shared_ptr<KmsClientFactory> kms_client_factory) {
-    if (kms_client_factory_ != NULLPTR) {
+    if (kms_client_factory_ != NULL) {
       throw ParquetException("KMS client factory has already been registered.");
     }
-    kms_client_factory_ = std::move(kms_client_factory);
+    kms_client_factory_ = kms_client_factory;
   }
 
   /// Key rotation. In the single wrapping mode, decrypts data keys with old master keys,
@@ -103,4 +104,5 @@ class PARQUET_EXPORT KeyWithMasterId {
   const std::string master_id_;
 };
 
-}  // namespace parquet::encryption
+}  // namespace encryption
+}  // namespace parquet

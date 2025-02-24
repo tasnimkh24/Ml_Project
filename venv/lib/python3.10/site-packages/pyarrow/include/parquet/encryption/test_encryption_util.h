@@ -37,7 +37,8 @@
 
 namespace parquet {
 class ParquetFileReader;
-namespace encryption::test {
+namespace encryption {
+namespace test {
 
 using ::arrow::internal::TemporaryDir;
 
@@ -88,7 +89,7 @@ std::unordered_map<std::string, std::string> BuildKeyMap(const char* const* colu
                                                          const char* footer_key);
 
 // The result of this function will be used to set into EncryptionConfiguration
-// as column keys.
+// as colum keys.
 std::string BuildColumnKeyMapping();
 
 // FileEncryptor and FileDecryptor are helper classes to write/read an encrypted parquet
@@ -113,21 +114,14 @@ class FileEncryptor {
 
 class FileDecryptor {
  public:
-  void DecryptFile(
-      const std::string& file_name,
-      const std::shared_ptr<FileDecryptionProperties>& file_decryption_properties);
-  void DecryptPageIndex(
-      const std::string& file_name,
-      const std::shared_ptr<FileDecryptionProperties>& file_decryption_properties);
+  void DecryptFile(std::string file_name,
+                   std::shared_ptr<FileDecryptionProperties> file_decryption_properties);
 
  private:
-  void CheckFile(
-      parquet::ParquetFileReader* file_reader,
-      const std::shared_ptr<FileDecryptionProperties>& file_decryption_properties);
-  void CheckPageIndex(
-      parquet::ParquetFileReader* file_reader,
-      const std::shared_ptr<FileDecryptionProperties>& file_decryption_properties);
+  void CheckFile(parquet::ParquetFileReader* file_reader,
+                 FileDecryptionProperties* file_decryption_properties);
 };
 
-}  // namespace encryption::test
+}  // namespace test
+}  // namespace encryption
 }  // namespace parquet

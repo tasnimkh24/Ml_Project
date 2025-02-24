@@ -52,19 +52,6 @@ Result<std::shared_ptr<Buffer>> SerializePlan(
     const acero::Declaration& declaration, ExtensionSet* ext_set,
     const ConversionOptions& conversion_options = {});
 
-/// \brief Serialize expressions to a Substrait message
-///
-/// \param[in] bound_expressions the expressions to serialize.
-/// \param[in] conversion_options options to control how the conversion is done
-/// \param[in,out] ext_set the extension mapping to use, optional, only needed
-///                        if you want to control the value of function anchors
-///                        to mirror a previous serialization / deserialization.
-///                        Will be updated if new functions are encountered
-ARROW_ENGINE_EXPORT
-Result<std::shared_ptr<Buffer>> SerializeExpressions(
-    const BoundExpressions& bound_expressions,
-    const ConversionOptions& conversion_options = {}, ExtensionSet* ext_set = NULLPTR);
-
 /// Factory function type for generating the node that consumes the batches produced by
 /// each toplevel Substrait relation when deserializing a Substrait Plan.
 using ConsumerFactory = std::function<std::shared_ptr<acero::SinkNodeConsumer>()>;
@@ -102,7 +89,8 @@ ARROW_ENGINE_EXPORT Result<std::vector<acero::Declaration>> DeserializePlans(
 /// \param[out] ext_set_out if non-null, the extension mapping used by the Substrait
 /// \param[in] conversion_options options to control how the conversion is to be done.
 /// Plan is returned here.
-/// \return an ExecPlan for the Substrait Plan
+/// \return an ExecNode corresponding to the single toplevel relation in the Substrait
+/// Plan
 ARROW_ENGINE_EXPORT Result<std::shared_ptr<acero::ExecPlan>> DeserializePlan(
     const Buffer& buf, const std::shared_ptr<acero::SinkNodeConsumer>& consumer,
     const ExtensionIdRegistry* registry = NULLPTR, ExtensionSet* ext_set_out = NULLPTR,
@@ -145,7 +133,8 @@ ARROW_ENGINE_EXPORT Result<std::vector<acero::Declaration>> DeserializePlans(
 /// \param[out] ext_set_out if non-null, the extension mapping used by the Substrait
 /// Plan is returned here.
 /// \param[in] conversion_options options to control how the conversion is to be done.
-/// \return an ExecPlan for the Substrait Plan
+/// \return a vector of ExecNode declarations, one for each toplevel relation in the
+/// Substrait Plan
 ARROW_ENGINE_EXPORT Result<std::shared_ptr<acero::ExecPlan>> DeserializePlan(
     const Buffer& buf, const std::shared_ptr<dataset::WriteNodeOptions>& write_options,
     const ExtensionIdRegistry* registry = NULLPTR, ExtensionSet* ext_set_out = NULLPTR,
@@ -167,21 +156,6 @@ ARROW_ENGINE_EXPORT Result<PlanInfo> DeserializePlan(
     const Buffer& buf, const ExtensionIdRegistry* registry = NULLPTR,
     ExtensionSet* ext_set_out = NULLPTR,
     const ConversionOptions& conversion_options = {});
-
-/// \brief Deserialize a Substrait ExtendedExpression message to the corresponding Arrow
-/// type
-///
-/// \param[in] buf a buffer containing the protobuf serialization of a collection of bound
-/// expressions
-/// \param[in] registry an extension-id-registry to use, or null for the default one
-/// \param[in] conversion_options options to control how the conversion is done
-/// \param[out] ext_set_out if non-null, the extension mapping used by the Substrait
-/// message is returned here.
-/// \return A collection of expressions and a common input schema they are bound to
-ARROW_ENGINE_EXPORT Result<BoundExpressions> DeserializeExpressions(
-    const Buffer& buf, const ExtensionIdRegistry* registry = NULLPTR,
-    const ConversionOptions& conversion_options = {},
-    ExtensionSet* ext_set_out = NULLPTR);
 
 /// \brief Deserializes a Substrait Type message to the corresponding Arrow type
 ///

@@ -25,7 +25,8 @@
 
 #include "parquet/encryption/file_key_material_store.h"
 
-namespace parquet::encryption {
+namespace parquet {
+namespace encryption {
 
 /// A FileKeyMaterialStore that stores key material in a file system file in the same
 /// folder as the Parquet file.
@@ -86,4 +87,5 @@ class PARQUET_EXPORT FileSystemKeyMaterialStore : public FileKeyMaterialStore {
   std::unordered_map<std::string, std::string> key_material_map_;
 };
 
-}  // namespace parquet::encryption
+}  // namespace encryption
+}  // namespace parquet

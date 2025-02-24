@@ -17,8 +17,6 @@
 
 # cython: language_level = 3
 
-from cython cimport binding
-
 from pyarrow.includes.common cimport *
 from pyarrow.includes.libarrow cimport *
 from pyarrow.includes.libarrow_fs cimport *
@@ -136,12 +134,9 @@ replication=1)``
         self.init(<shared_ptr[CFileSystem]> wrapped)
         return self
 
-    @staticmethod
-    @binding(True)  # Required for cython < 3
-    def _reconstruct(kwargs):
-        # __reduce__ doesn't allow passing named arguments directly to the
-        # reconstructor, hence this wrapper.
-        return HadoopFileSystem(**kwargs)
+    @classmethod
+    def _reconstruct(cls, kwargs):
+        return cls(**kwargs)
 
     def __reduce__(self):
         cdef CHdfsOptions opts = self.hdfs.options()

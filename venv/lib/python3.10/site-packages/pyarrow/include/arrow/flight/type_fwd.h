@@ -24,10 +24,6 @@ class Uri;
 namespace flight {
 struct Action;
 struct ActionType;
-template <typename T>
-class AsyncListener;
-class AsyncListenerBase;
-class AsyncRpc;
 struct BasicAuth;
 class ClientAuthHandler;
 class ClientMiddleware;
@@ -38,7 +34,6 @@ struct FlightClientOptions;
 struct FlightDescriptor;
 struct FlightEndpoint;
 class FlightInfo;
-class PollInfo;
 class FlightListing;
 class FlightMetadataReader;
 class FlightMetadataWriter;
@@ -56,7 +51,6 @@ class ServerMiddleware;
 class ServerMiddlewareFactory;
 struct Ticket;
 namespace internal {
-class AsyncRpc;
 class ClientTransport;
 struct FlightData;
 class ServerTransport;

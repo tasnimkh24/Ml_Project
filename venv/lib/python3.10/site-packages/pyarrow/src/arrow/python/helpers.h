@@ -28,9 +28,9 @@
 
 #include <numpy/halffloat.h>
 
-#include "arrow/python/visibility.h"
 #include "arrow/type.h"
 #include "arrow/util/macros.h"
+#include "arrow/python/visibility.h"
 
 namespace arrow {
 
@@ -153,9 +153,6 @@ Status IntegerScalarToFloat32Safe(PyObject* obj, float* result);
 
 // \brief Print Python object __repr__
 void DebugPrint(PyObject* obj);
-
-ARROW_PYTHON_EXPORT
-bool IsThreadingEnabled();
 
 }  // namespace internal
 }  // namespace py

@@ -27,8 +27,8 @@
 #include <vector>
 
 #include "arrow/buffer.h"
-#include "arrow/python/visibility.h"
 #include "arrow/sparse_tensor.h"
+#include "arrow/python/visibility.h"
 
 namespace arrow {
 
@@ -49,11 +49,9 @@ class ARROW_PYTHON_EXPORT NumPyBuffer : public Buffer {
 };
 
 ARROW_PYTHON_EXPORT
-Result<std::shared_ptr<DataType>> NumPyDtypeToArrow(PyObject* dtype);
+Status NumPyDtypeToArrow(PyObject* dtype, std::shared_ptr<DataType>* out);
 ARROW_PYTHON_EXPORT
-Result<std::shared_ptr<DataType>> NumPyDtypeToArrow(PyArray_Descr* descr);
-ARROW_PYTHON_EXPORT
-Result<std::shared_ptr<DataType>> NumPyScalarToArrowDataType(PyObject* scalar);
+Status NumPyDtypeToArrow(PyArray_Descr* descr, std::shared_ptr<DataType>* out);
 
 ARROW_PYTHON_EXPORT Status NdarrayToTensor(MemoryPool* pool, PyObject* ao,
                                            const std::vector<std::string>& dim_names,

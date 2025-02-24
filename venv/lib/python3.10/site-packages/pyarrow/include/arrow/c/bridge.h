@@ -17,12 +17,10 @@
 
 #pragma once
 
-#include <functional>
 #include <memory>
 #include <string>
 
 #include "arrow/c/abi.h"
-#include "arrow/device.h"
 #include "arrow/result.h"
 #include "arrow/status.h"
 #include "arrow/type_fwd.h"
@@ -168,133 +166,6 @@ Result<std::shared_ptr<RecordBatch>> ImportRecordBatch(struct ArrowArray* array,
 
 /// @}
 
-/// \defgroup c-data-device-interface Functions for working with the C data device
-/// interface.
-///
-/// @{
-
-/// \brief EXPERIMENTAL: Export C++ Array as an ArrowDeviceArray.
-///
-/// The resulting ArrowDeviceArray struct keeps the array data and buffers alive
-/// until its release callback is called by the consumer. All buffers in
-/// the provided array MUST have the same device_type, otherwise an error
-/// will be returned.
-///
-/// If sync is non-null, get_event will be called on it in order to
-/// potentially provide an event for consumers to synchronize on.
-///
-/// \param[in] array Array object to export
-/// \param[in] sync shared_ptr to object derived from Device::SyncEvent or null
-/// \param[out] out C struct to export the array to
-/// \param[out] out_schema optional C struct to export the array type to
-ARROW_EXPORT
-Status ExportDeviceArray(const Array& array, std::shared_ptr<Device::SyncEvent> sync,
-                         struct ArrowDeviceArray* out,
-                         struct ArrowSchema* out_schema = NULLPTR);
-
-/// \brief EXPERIMENTAL: Export C++ RecordBatch as an ArrowDeviceArray.
-///
-/// The record batch is exported as if it were a struct array.
-/// The resulting ArrowDeviceArray struct keeps the record batch data and buffers alive
-/// until its release callback is called by the consumer.
-///
-/// All buffers of all columns in the record batch must have the same device_type
-/// otherwise an error will be returned. If columns are on different devices,
-/// they should be exported using different ArrowDeviceArray instances.
-///
-/// If sync is non-null, get_event will be called on it in order to
-/// potentially provide an event for consumers to synchronize on.
-///
-/// \param[in] batch Record batch to export
-/// \param[in] sync shared_ptr to object derived from Device::SyncEvent or null
-/// \param[out] out C struct where to export the record batch
-/// \param[out] out_schema optional C struct where to export the record batch schema
-ARROW_EXPORT
-Status ExportDeviceRecordBatch(const RecordBatch& batch,
-                               std::shared_ptr<Device::SyncEvent> sync,
-                               struct ArrowDeviceArray* out,
-                               struct ArrowSchema* out_schema = NULLPTR);
-
-using DeviceMemoryMapper =
-    std::function<Result<std::shared_ptr<MemoryManager>>(ArrowDeviceType, int64_t)>;
-
-ARROW_EXPORT
-Result<std::shared_ptr<MemoryManager>> DefaultDeviceMemoryMapper(
-    ArrowDeviceType device_type, int64_t device_id);
-
-/// \brief EXPERIMENTAL: Import C++ device array from the C data interface.
-///
-/// The ArrowArray struct has its contents moved (as per the C data interface
-/// specification) to a private object held alive by the resulting array. The
-/// buffers of the Array are located on the device indicated by the device_type.
-///
-/// \param[in,out] array C data interface struct holding the array data
-/// \param[in] type type of the imported array
-/// \param[in] mapper A function to map device + id to memory manager. If not
-/// specified, defaults to map "cpu" to the built-in default memory manager.
-/// \return Imported array object
-ARROW_EXPORT
-Result<std::shared_ptr<Array>> ImportDeviceArray(
-    struct ArrowDeviceArray* array, std::shared_ptr<DataType> type,
-    const DeviceMemoryMapper& mapper = DefaultDeviceMemoryMapper);
-
-/// \brief EXPERIMENTAL: Import C++ device array and its type from the C data interface.
-///
-/// The ArrowArray struct has its contents moved (as per the C data interface
-/// specification) to a private object held alive by the resulting array.
-/// The ArrowSchema struct is released, even if this function fails. The
-/// buffers of the Array are located on the device indicated by the device_type.
-///
-/// \param[in,out] array C data interface struct holding the array data
-/// \param[in,out] type C data interface struct holding the array type
-/// \param[in] mapper A function to map device + id to memory manager. If not
-/// specified, defaults to map "cpu" to the built-in default memory manager.
-/// \return Imported array object
-ARROW_EXPORT
-Result<std::shared_ptr<Array>> ImportDeviceArray(
-    struct ArrowDeviceArray* array, struct ArrowSchema* type,
-    const DeviceMemoryMapper& mapper = DefaultDeviceMemoryMapper);
-
-/// \brief EXPERIMENTAL: Import C++ record batch with buffers on a device from the C data
-/// interface.
-///
-/// The ArrowArray struct has its contents moved (as per the C data interface
-/// specification) to a private object held alive by the resulting record batch.
-/// The buffers of all columns of the record batch are located on the device
-/// indicated by the device type.
-///
-/// \param[in,out] array C data interface struct holding the record batch data
-/// \param[in] schema schema of the imported record batch
-/// \param[in] mapper A function to map device + id to memory manager. If not
-/// specified, defaults to map "cpu" to the built-in default memory manager.
-/// \return Imported record batch object
-ARROW_EXPORT
-Result<std::shared_ptr<RecordBatch>> ImportDeviceRecordBatch(
-    struct ArrowDeviceArray* array, std::shared_ptr<Schema> schema,
-    const DeviceMemoryMapper& mapper = DefaultDeviceMemoryMapper);
-
-/// \brief EXPERIMENTAL: Import C++ record batch with buffers on a device and its schema
-/// from the C data interface.
-///
-/// The type represented by the ArrowSchema struct must be a struct type array.
-/// The ArrowArray struct has its contents moved (as per the C data interface
-/// specification) to a private object held alive by the resulting record batch.
-/// The ArrowSchema struct is released, even if this function fails. The buffers
-/// of all columns of the record batch are located on the device indicated by the
-/// device type.
-///
-/// \param[in,out] array C data interface struct holding the record batch data
-/// \param[in,out] schema C data interface struct holding the record batch schema
-/// \param[in] mapper A function to map device + id to memory manager. If not
-/// specified, defaults to map "cpu" to the built-in default memory manager.
-/// \return Imported record batch object
-ARROW_EXPORT
-Result<std::shared_ptr<RecordBatch>> ImportDeviceRecordBatch(
-    struct ArrowDeviceArray* array, struct ArrowSchema* schema,
-    const DeviceMemoryMapper& mapper = DefaultDeviceMemoryMapper);
-
-/// @}
-
 /// \defgroup c-stream-interface Functions for working with the C data interface.
 ///
 /// @{
@@ -310,42 +181,6 @@ ARROW_EXPORT
 Status ExportRecordBatchReader(std::shared_ptr<RecordBatchReader> reader,
                                struct ArrowArrayStream* out);
 
-/// \brief Export C++ ChunkedArray using the C data interface format.
-///
-/// The resulting ArrowArrayStream struct keeps the chunked array data and buffers alive
-/// until its release callback is called by the consumer.
-///
-/// \param[in] chunked_array ChunkedArray object to export
-/// \param[out] out C struct where to export the stream
-ARROW_EXPORT
-Status ExportChunkedArray(std::shared_ptr<ChunkedArray> chunked_array,
-                          struct ArrowArrayStream* out);
-
-/// \brief Export C++ RecordBatchReader using the C device stream interface
-///
-/// The resulting ArrowDeviceArrayStream struct keeps the record batch reader
-/// alive until its release callback is called by the consumer. The device
-/// type is determined by calling device_type() on the RecordBatchReader.
-///
-/// \param[in] reader RecordBatchReader object to export
-/// \param[out] out C struct to export the stream to
-ARROW_EXPORT
-Status ExportDeviceRecordBatchReader(std::shared_ptr<RecordBatchReader> reader,
-                                     struct ArrowDeviceArrayStream* out);
-
-/// \brief Export C++ ChunkedArray using the C device data interface format.
-///
-/// The resulting ArrowDeviceArrayStream keeps the chunked array data and buffers
-/// alive until its release callback is called by the consumer.
-///
-/// \param[in] chunked_array ChunkedArray object to export
-/// \param[in] device_type the device type the data is located on
-/// \param[out] out C struct to export the stream to
-ARROW_EXPORT
-Status ExportDeviceChunkedArray(std::shared_ptr<ChunkedArray> chunked_array,
-                                DeviceAllocationType device_type,
-                                struct ArrowDeviceArrayStream* out);
-
 /// \brief Import C++ RecordBatchReader from the C stream interface.
 ///
 /// The ArrowArrayStream struct has its contents moved to a private object
@@ -356,53 +191,6 @@ Status ExportDeviceChunkedArray(std::shared_ptr<ChunkedArray> chunked_array,
 ARROW_EXPORT
 Result<std::shared_ptr<RecordBatchReader>> ImportRecordBatchReader(
     struct ArrowArrayStream* stream);
-
-/// \brief Import C++ ChunkedArray from the C stream interface
-///
-/// The ArrowArrayStream struct has its contents moved to a private object,
-/// is consumed in its entirity, and released before returning all chunks
-/// as a ChunkedArray.
-///
-/// \param[in,out] stream C stream interface struct
-/// \return Imported ChunkedArray object
-ARROW_EXPORT
-Result<std::shared_ptr<ChunkedArray>> ImportChunkedArray(struct ArrowArrayStream* stream);
-
-/// \brief Import C++ RecordBatchReader from the C device stream interface
-///
-/// The ArrowDeviceArrayStream struct has its contents moved to a private object
-/// held alive by the resulting record batch reader.
-///
-/// \note If there was a required sync event, sync events are accessible by individual
-/// buffers of columns. We are not yet bubbling the sync events from the buffers up to
-/// the `GetSyncEvent` method of an imported RecordBatch. This will be added in a future
-/// update.
-///
-/// \param[in,out] stream C device stream interface struct
-/// \param[in] mapper mapping from device type and ID to memory manager
-/// \return Imported RecordBatchReader object
-ARROW_EXPORT
-Result<std::shared_ptr<RecordBatchReader>> ImportDeviceRecordBatchReader(
-    struct ArrowDeviceArrayStream* stream,
-    const DeviceMemoryMapper& mapper = DefaultDeviceMemoryMapper);
-
-/// \brief Import C++ ChunkedArray from the C device stream interface
-///
-/// The ArrowDeviceArrayStream struct has its contents moved to a private object,
-/// is consumed in its entirety, and released before returning all chunks as a
-/// ChunkedArray.
-///
-/// \note Any chunks that require synchronization for their device memory will have
-/// the SyncEvent objects available by checking the individual buffers of each chunk.
-/// These SyncEvents should be checked before accessing the data in those buffers.
-///
-/// \param[in,out] stream C device stream interface struct
-/// \param[in] mapper mapping from device type and ID to memory manager
-/// \return Imported ChunkedArray object
-ARROW_EXPORT
-Result<std::shared_ptr<ChunkedArray>> ImportDeviceChunkedArray(
-    struct ArrowDeviceArrayStream* stream,
-    const DeviceMemoryMapper& mapper = DefaultDeviceMemoryMapper);
 
 /// @}
 

@@ -25,7 +25,8 @@
 #include "parquet/encryption/kms_client_factory.h"
 #include "parquet/platform.h"
 
-namespace parquet::encryption {
+namespace parquet {
+namespace encryption {
 
 static constexpr ParquetCipher::type kDefaultEncryptionAlgorithm =
     ParquetCipher::AES_GCM_V1;
@@ -113,6 +114,10 @@ class PARQUET_EXPORT CryptoFactory {
       const std::shared_ptr<::arrow::fs::FileSystem>& file_system = NULLPTR);
 
   /// Get decryption properties for a Parquet file.
+  /// The returned FileDecryptionProperties object will use the cache inside this
+  /// CryptoFactory object, so please keep this
+  /// CryptoFactory object alive along with the returned
+  /// FileDecryptionProperties object.
   /// If external key material is used then a file system and path to the
   /// parquet file must be provided.
   std::shared_ptr<FileDecryptionProperties> GetFileDecryptionProperties(
@@ -121,12 +126,10 @@ class PARQUET_EXPORT CryptoFactory {
       const std::shared_ptr<::arrow::fs::FileSystem>& file_system = NULLPTR);
 
   void RemoveCacheEntriesForToken(const std::string& access_token) {
-    key_toolkit_->RemoveCacheEntriesForToken(access_token);
+    key_toolkit_.RemoveCacheEntriesForToken(access_token);
   }
 
-  void RemoveCacheEntriesForAllTokens() {
-    key_toolkit_->RemoveCacheEntriesForAllTokens();
-  }
+  void RemoveCacheEntriesForAllTokens() { key_toolkit_.RemoveCacheEntriesForAllTokens(); }
 
   /// Rotates master encryption keys for a Parquet file that uses external key material.
   /// In single wrapping mode, data encryption keys are decrypted with the old master keys
@@ -146,7 +149,8 @@ class PARQUET_EXPORT CryptoFactory {
       int dek_length, const std::string& column_keys, FileKeyWrapper* key_wrapper);
 
   /// Key utilities object for kms client initialization and cache control
-  std::shared_ptr<KeyToolkit> key_toolkit_ = std::make_shared<KeyToolkit>();
+  KeyToolkit key_toolkit_;
 };
 
-}  // namespace parquet::encryption
+}  // namespace encryption
+}  // namespace parquet
