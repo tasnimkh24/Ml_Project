@@ -5,6 +5,7 @@ pipeline {
         GITHUB_TOKEN = credentials('github-token')
         PYTHON = 'python3.10'
         VENV_PATH = '/tmp/venv'
+        MLFLOW_PORT = '5003'  // Port pour MLflow UI
     }
 
     stages {
@@ -23,7 +24,7 @@ pipeline {
                     . ${VENV_PATH}/bin/activate
                     pip install --upgrade pip
                     pip install -r requirements.txt
-                    pip install pytest pytest-cov  # Installer pytest et pytest-cov
+                    pip install pytest pytest-cov bandit safety flake8 black pylint isort mlflow
                 '''
             }
         }
@@ -34,9 +35,8 @@ pipeline {
                 catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                     sh '''
                         . ${VENV_PATH}/bin/activate
-                        pip install bandit safety  # Installer Bandit et Safety
-                        bandit -r src/ -o bandit_report.txt  # Analyse de sécurité avec Bandit
-                        safety check --full-report > safety_report.txt  # Vérification des vulnérabilités des dépendances
+                        bandit -r src/ -o bandit_report.txt
+                        safety check --full-report > safety_report.txt
                     '''
                 }
             }
@@ -53,11 +53,10 @@ pipeline {
                 catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                     sh '''
                         . ${VENV_PATH}/bin/activate
-                        pip install flake8 black pylint isort  # Installer les outils de qualité de code
-                        flake8 src/ --config=.flake8 --output-file=flake8_report.txt  # Analyse avec flake8
-                        black --check src/ --diff > black_report.txt  # Vérification du formatage avec black
-                        pylint src/ --output=pylint_report.txt  # Analyse avec pylint
-                        isort --check-only src/ --diff > isort_report.txt  # Vérification de l'ordre des imports avec isort
+                        flake8 src/ --config=.flake8 --output-file=flake8_report.txt
+                        black --check src/ --diff > black_report.txt
+                        pylint src/ --output=pylint_report.txt
+                        isort --check-only src/ --diff > isort_report.txt
                     '''
                 }
             }
@@ -68,8 +67,7 @@ pipeline {
             }
         }
 
- 
-        // Étape 6: Préparation des données
+        // Étape 5: Préparation des données
         stage('Prepare Data') {
             steps {
                 sh '''
@@ -79,7 +77,7 @@ pipeline {
             }
         }
 
-        // Étape 7: Entraînement du modèle
+        // Étape 6: Entraînement du modèle
         stage('Train Model') {
             steps {
                 sh '''
@@ -89,12 +87,22 @@ pipeline {
             }
         }
 
-        // Étape 8: Évaluation du modèle
+        // Étape 7: Évaluation du modèle
         stage('Evaluate Model') {
             steps {
                 sh '''
                     . ${VENV_PATH}/bin/activate
                     ${PYTHON} src/main.py --train-data data/train.csv --test data/test.csv --evaluate
+                '''
+            }
+        }
+
+        // Étape 8: Démarrer MLflow UI
+        stage('Start MLflow UI') {
+            steps {
+                sh '''
+                    . ${VENV_PATH}/bin/activate
+                    mlflow ui --host 0.0.0.0 --port ${MLFLOW_PORT} &
                 '''
             }
         }

@@ -1,0 +1,15 @@
+artifact_uri: file:///home/tasnim/projet_final/mlruns/909297510003831432/06c4d68e595642c48e07bec702fd9cb3/artifacts
+end_time: 1740424371654
+entry_point_name: ''
+experiment_id: '909297510003831432'
+lifecycle_stage: active
+run_id: 06c4d68e595642c48e07bec702fd9cb3
+run_name: wise-smelt-814
+run_uuid: 06c4d68e595642c48e07bec702fd9cb3
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1740424371614
+status: 3
+tags: []
+user_id: tasnim

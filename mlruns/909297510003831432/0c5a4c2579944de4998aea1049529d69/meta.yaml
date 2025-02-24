@@ -1,0 +1,15 @@
+artifact_uri: file:///home/tasnim/projet_final/mlruns/909297510003831432/0c5a4c2579944de4998aea1049529d69/artifacts
+end_time: 1740423947389
+entry_point_name: ''
+experiment_id: '909297510003831432'
+lifecycle_stage: active
+run_id: 0c5a4c2579944de4998aea1049529d69
+run_name: omniscient-fawn-895
+run_uuid: 0c5a4c2579944de4998aea1049529d69
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1740423947374
+status: 3
+tags: []
+user_id: tasnim

@@ -1,0 +1,15 @@
+artifact_uri: file:///home/tasnim/projet_final/mlruns/909297510003831432/127289ca47814c8baeb9f6fd0d561359/artifacts
+end_time: 1740424944850
+entry_point_name: ''
+experiment_id: '909297510003831432'
+lifecycle_stage: active
+run_id: 127289ca47814c8baeb9f6fd0d561359
+run_name: intrigued-shoat-11
+run_uuid: 127289ca47814c8baeb9f6fd0d561359
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1740424944809
+status: 3
+tags: []
+user_id: tasnim
