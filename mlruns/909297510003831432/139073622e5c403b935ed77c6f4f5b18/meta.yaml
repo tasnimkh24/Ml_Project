@@ -1,0 +1,15 @@
+artifact_uri: file:///home/tasnim/projet_final/mlruns/909297510003831432/139073622e5c403b935ed77c6f4f5b18/artifacts
+end_time: 1740427581063
+entry_point_name: ''
+experiment_id: '909297510003831432'
+lifecycle_stage: active
+run_id: 139073622e5c403b935ed77c6f4f5b18
+run_name: learned-penguin-397
+run_uuid: 139073622e5c403b935ed77c6f4f5b18
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1740427581049
+status: 3
+tags: []
+user_id: tasnim

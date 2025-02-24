@@ -66,7 +66,22 @@ pipeline {
                 }
             }
         }
-
+         stage('Unit Tests') {
+            steps {
+                catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                    sh '''
+                        . ${VENV_PATH}/bin/activate
+                        export PYTHONPATH=${WORKSPACE}  # Ajouter le répertoire de travail au PYTHONPATH
+                        pytest --cov=src --cov-report=xml --junitxml=pytest_report.xml test/  # Exécuter les tests unitaires
+                    '''
+                }
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: 'pytest_report.xml, coverage.xml', allowEmptyArchive: true
+                }
+            }
+        }
         // Étape 5: Préparation des données
         stage('Prepare Data') {
             steps {
