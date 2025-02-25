@@ -5,8 +5,8 @@ pipeline {
         GITHUB_TOKEN = credentials('testes')
         PYTHON = 'python3.10'
         VENV_PATH = '/tmp/venv'
-        MLFLOW_PORT = '5003'
-        MLFLOW_TRACKING_URI = 'sqlite:///mlflow.db'  // Add this line
+        MLFLOW_PORT = '5000'
+        MLFLOW_TRACKING_URI = 'http://localhost:5000'  // Add this line
     }
 
     stages {
@@ -79,7 +79,7 @@ pipeline {
                         echo "WORKSPACE: ${WORKSPACE}"
                         export PYTHONPATH=${WORKSPACE}  # Set PYTHONPATH to the root directory
                         cd ${WORKSPACE}  # Change to the root directory
-                        python -m pytest --cov=src --cov-report=xml --junitxml=pytest_report.xml test/
+                        pytest --cov=src --cov-report=xml --junitxml=pytest_report.xml test/
                     '''
                 }
             }
@@ -125,7 +125,7 @@ pipeline {
             steps {
                 sh '''
                     . ${VENV_PATH}/bin/activate
-                    nohup mlflow ui --backend-store-uri sqlite:///mlflow.db --host 0.0.0.0 --port ${MLFLOW_PORT} > mlflow.log 2>&1 &
+                    nohup mlflow ui --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlruns --host 0.0.0.0 --port ${MLFLOW_PORT} > mlflow.log 2>&1 &
                     echo "MLflow UI started at http://<jenkins-server>:${MLFLOW_PORT}"
                 '''
             }
