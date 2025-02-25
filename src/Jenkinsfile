@@ -70,11 +70,14 @@ pipeline {
         // Étape 5: Tests unitaires
         stage('Unit Tests') {
             steps {
+                echo "Starting Unit Tests..."
                 catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                     sh '''
                         . ${VENV_PATH}/bin/activate
-                        export PYTHONPATH=${WORKSPACE}  // Ajouter le répertoire de travail au PYTHONPATH
-                        pytest --cov=src --cov-report=xml --junitxml=pytest_report.xml test/  // Exécuter les tests unitaires
+                        echo "PYTHONPATH: ${PYTHONPATH}"
+                        echo "WORKSPACE: ${WORKSPACE}"
+                        export PYTHONPATH=${WORKSPACE}/src  // Explicitly set PYTHONPATH
+                        pytest --cov=src --cov-report=xml --junitxml=pytest_report.xml test/
                     '''
                 }
             }
