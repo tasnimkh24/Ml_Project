@@ -1,0 +1,15 @@
+artifact_uri: file:///home/tasnim/projet_final/mlruns/0/3e4cad85974b48efb278a827eafc1952/artifacts
+end_time: 1740506132145
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 3e4cad85974b48efb278a827eafc1952
+run_name: handsome-ape-393
+run_uuid: 3e4cad85974b48efb278a827eafc1952
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1740506128944
+status: 3
+tags: []
+user_id: tasnim

@@ -61,6 +61,7 @@ def evaluate_only(train_path, test_path):
         sys.exit(1)
 
 
+
 def main(train_path, test_path, prepare_only_flag=False, train_flag=False, deploy_flag=False, evaluate_flag=False, stage="Staging"):
     """
     Main function to handle data preparation, training, evaluation, and deployment.
@@ -70,7 +71,7 @@ def main(train_path, test_path, prepare_only_flag=False, train_flag=False, deplo
         validate_file_path(train_path)
         validate_file_path(test_path)
 
-        # Start an MLflow run
+        # Start a single MLflow run for the entire process
         with mlflow.start_run():
             if deploy_flag:
                 deploy_model(stage=stage)  # Pass the stage argument
@@ -96,7 +97,7 @@ def main(train_path, test_path, prepare_only_flag=False, train_flag=False, deplo
     except Exception as e:
         logging.error(f"Error in main function: {e}")
         sys.exit(1)
-
+    
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Test the prepare_data function")
     parser.add_argument("--train-data", type=str, required=False, help="Path to the training CSV file")

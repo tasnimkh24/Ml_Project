@@ -1,0 +1,15 @@
+artifact_uri: file:///home/tasnim/projet_final/mlruns/0/e9bfa9aff61d4969bae42642f480930f/artifacts
+end_time: 1740507908246
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: e9bfa9aff61d4969bae42642f480930f
+run_name: calm-bug-120
+run_uuid: e9bfa9aff61d4969bae42642f480930f
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1740507903600
+status: 3
+tags: []
+user_id: tasnim

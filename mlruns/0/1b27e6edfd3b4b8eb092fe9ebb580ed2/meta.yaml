@@ -1,0 +1,15 @@
+artifact_uri: file:///home/tasnim/projet_final/mlruns/0/1b27e6edfd3b4b8eb092fe9ebb580ed2/artifacts
+end_time: 1740507928204
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 1b27e6edfd3b4b8eb092fe9ebb580ed2
+run_name: dashing-slug-56
+run_uuid: 1b27e6edfd3b4b8eb092fe9ebb580ed2
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1740507918716
+status: 3
+tags: []
+user_id: tasnim

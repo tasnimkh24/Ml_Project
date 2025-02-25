@@ -115,10 +115,7 @@ def prepare_data(train_path, test_path):
         logger.error(f"Error during data preparation: {e}")
         raise
 
-import mlflow
-from sklearn.ensemble import GradientBoostingClassifier
-from sklearn.model_selection import RandomizedSearchCV
-from scipy.stats import randint, uniform
+
 
 def train_model(X_train, y_train):
     """
