@@ -76,8 +76,9 @@ pipeline {
                         . ${VENV_PATH}/bin/activate
                         echo "PYTHONPATH: ${PYTHONPATH}"
                         echo "WORKSPACE: ${WORKSPACE}"
-                        export PYTHONPATH=${WORKSPACE}/src  # Explicitly set PYTHONPATH
-                        pytest --cov=src --cov-report=xml --junitxml=pytest_report.xml test/
+                        export PYTHONPATH=${WORKSPACE}  # Set PYTHONPATH to the root directory
+                        cd ${WORKSPACE}  # Change to the root directory
+                        python -m pytest --cov=src --cov-report=xml --junitxml=pytest_report.xml test/
                     '''
                 }
             }

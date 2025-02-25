@@ -1,0 +1,15 @@
+artifact_uri: file:///home/tasnim/projet_final/mlruns/0/2fc13a76d52141559a35a6c221cb8478/artifacts
+end_time: 1740517105248
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 2fc13a76d52141559a35a6c221cb8478
+run_name: delicate-ape-128
+run_uuid: 2fc13a76d52141559a35a6c221cb8478
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1740517093849
+status: 3
+tags: []
+user_id: tasnim

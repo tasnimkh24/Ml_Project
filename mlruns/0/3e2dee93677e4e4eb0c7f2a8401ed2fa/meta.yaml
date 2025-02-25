@@ -1,0 +1,15 @@
+artifact_uri: file:///home/tasnim/projet_final/mlruns/0/3e2dee93677e4e4eb0c7f2a8401ed2fa/artifacts
+end_time: 1740517093842
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 3e2dee93677e4e4eb0c7f2a8401ed2fa
+run_name: luminous-mule-497
+run_uuid: 3e2dee93677e4e4eb0c7f2a8401ed2fa
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1740517089709
+status: 3
+tags: []
+user_id: tasnim
