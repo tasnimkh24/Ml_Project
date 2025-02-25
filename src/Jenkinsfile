@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        GITHUB_TOKEN = credentials('github-token')
+        GITHUB_TOKEN = credentials('testes')
         PYTHON = 'python3.10'
         VENV_PATH = '/tmp/venv'
         MLFLOW_PORT = '5003'  // Port pour MLflow UI
