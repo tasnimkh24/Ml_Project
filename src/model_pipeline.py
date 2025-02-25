@@ -12,17 +12,16 @@ from scipy.stats import randint, uniform
 import joblib
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 import os
-
-import numpy as np
-import sklearn
+import mlflow
+import mlflow.sklearn
 import logging
+import sklearn  # Add this import
+from mlflow.tracking import MlflowClient
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-from sklearn.preprocessing import LabelEncoder, StandardScaler
-from sklearn.feature_selection import f_classif
-from imblearn.over_sampling import SMOTE
-from sklearn.model_selection import train_test_split
-import joblib
-
+# Rest of your code...
 def prepare_data(train_path, test_path):
     """
     Prepare the dataset for training and testing.
@@ -97,7 +96,7 @@ def prepare_data(train_path, test_path):
     X_test_scaled = scaler.transform(X_test)
     X_cluster_scaled = scaler.fit_transform(X_cluster)
 
-     # Save preprocessing objects
+    # Save preprocessing objects
     preprocessing_objects = {
         'label_encoder': label_encoder,
         'scaler': scaler,
@@ -142,13 +141,22 @@ def train_model(X_train, y_train):
 
     # Log hyperparameters and metrics to MLflow
     best_params = random_search.best_params_
-    
+    with mlflow.start_run():
+        mlflow.log_params(best_params)
+        mlflow.log_metric("accuracy", random_search.best_score_)
+        mlflow.sklearn.log_model(random_search.best_estimator_, "model")
+        print("✅ Model trained and logged in MLflow!")
+
+    # Save the model locally
+    save_model(random_search.best_estimator_)
+
     # Return the best model
     return random_search.best_estimator_
 
-
 def evaluate_model(model, X_test, y_test):
-  
+    """
+    Evaluate the model and log metrics.
+    """
     # Make predictions
     y_pred = model.predict(X_test)
 
@@ -157,13 +165,14 @@ def evaluate_model(model, X_test, y_test):
     report = classification_report(y_test, y_pred)
     cm = confusion_matrix(y_test, y_pred)
 
-        # Plot and log confusion matrix
+    # Plot and log confusion matrix
     plt.figure(figsize=(8, 6))
     sns.heatmap(cm, annot=True, fmt='d', cmap='Blues')
     plt.title("Confusion Matrix")
     plt.xlabel("Predicted")
     plt.ylabel("Actual")
- 
+    plt.savefig("confusion_matrix.png")
+    mlflow.log_artifact("confusion_matrix.png")
 
     # Print results
     print(f"\n✅ Evaluation Completed!")
@@ -171,14 +180,10 @@ def evaluate_model(model, X_test, y_test):
     print(f"📊 Classification Report:\n{report}")
     print(f"📊 Confusion Matrix:\n{cm}")
 
-
-
-
-# Set up logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
 def save_model(model, filename="gbm_model.joblib"):
+    """
+    Save the model to the specified filename.
+    """
     # Chemin relatif vers le dossier models/
     model_path = os.path.join("models", filename)
     # Créez le dossier models/ s'il n'existe pas
@@ -187,23 +192,9 @@ def save_model(model, filename="gbm_model.joblib"):
     joblib.dump(model, model_path)
     logger.info(f"\n💾 Model saved to '{model_path}' and logged as an artifact.")
 
-import os
-import joblib
-import numpy as np
-import sklearn
-from logging import Logger
-
-logger = Logger(__name__)
-
 def load_model(filename="gbm_model.joblib"):
     """
     Load a trained model from the specified filename.
-    
-    Args:
-        filename (str): Name of the model file (default: "gbm_model.joblib").
-    
-    Returns:
-        model: The loaded model.
     """
     # If filename already includes the models/ directory, use it as is
     if filename.startswith("models/"):
@@ -230,57 +221,56 @@ def load_model(filename="gbm_model.joblib"):
     except Exception as e:
         logger.error(f"Error loading model: {e}")
         raise
-def predict(model, test_path):
+
+
+# model_pipeline.py (add these functions)
+import mlflow
+from mlflow.tracking import MlflowClient
+
+def transition_model_stage(model_name, model_version, new_stage):
     """
-    Generate predictions using the trained model.
+    Transition a model version to a new stage.
     """
-    try:
-        # Load test data
-        test_data = pd.read_csv(test_path)
+    client = MlflowClient()
+    client.transition_model_version_stage(
+        name=model_name,
+        version=model_version,
+        stage=new_stage,
+    )
+    print(f"✅ Model version {model_version} transitioned to {new_stage} stage.")
 
-        # Load preprocessing objects
-        preprocessing_objects = joblib.load("models/preprocessing_objects.joblib")
-        label_encoder = preprocessing_objects['label_encoder']
-        scaler = preprocessing_objects['scaler']
-        columns_to_drop = preprocessing_objects['columns_to_drop']
-        target_mean = preprocessing_objects['target_mean']
+def get_model_stage(model_name, model_version):
+    """
+    Get the current stage of a model version.
+    """
+    client = MlflowClient()
+    model_version_details = client.get_model_version(name=model_name, version=model_version)
+    return model_version_details.current_stage
 
-        # Drop the target column if it exists
-        if 'Churn' in test_data.columns:
-            test_data = test_data.drop(columns=['Churn'])
+def deploy_model(stage="Staging"):
+    """
+    Deploy the model, register it in MLflow, and transition it to a specific stage.
+    """
+    # Load the trained model
+    model = load_model("models/gbm_model.joblib")
+    print("\n🚀 Deploying Model...")
 
-        # Preprocess test data
-        # 1. Convert binary categorical variables
-        test_data['International plan'] = test_data['International plan'].map({'Yes': 1, 'No': 0})
-        test_data['Voice mail plan'] = test_data['Voice mail plan'].map({'Yes': 1, 'No': 0})
+    # Log the deployed model in MLflow
+    with mlflow.start_run():
+        print("✅ MLflow run started.")
+        
+        # Log the model as an artifact
+        mlflow.sklearn.log_model(model, "deployed_model")
+        print("✅ Model logged in MLflow.")
 
-        # 2. Target Encoding for 'State'
-        test_data['STATE_TargetMean'] = test_data['State'].map(target_mean)
+        # Register the model in the Models section
+        model_uri = f"runs:/{mlflow.active_run().info.run_id}/deployed_model"
+        registered_model = mlflow.register_model(model_uri, "My_Deployed_Model")
+        print("✅ Model registered in MLflow Models section.")
 
-        # 3. Label Encoding for 'State'
-        test_data['STATE_Label'] = label_encoder.transform(test_data['State'])
-        test_data = test_data.drop(columns=['State'])
+        # Transition the model to the specified stage
+        transition_model_stage(registered_model.name, registered_model.version, stage)
+        print(f"✅ Model transitioned to {stage} stage.")
 
-        # 4. Drop non-significant columns
-        test_data = test_data.drop(columns=columns_to_drop, errors='ignore')
-
-        # 5. Ensure the test data has the same columns as the training data
-        # Load the training data columns from preprocessing objects
-        training_columns = joblib.load("models/training_columns.joblib")
-        test_data = test_data[training_columns]
-
-        # 6. Normalize data
-        test_data_scaled = scaler.transform(test_data)
-
-        # Generate predictions
-        predictions = model.predict(test_data_scaled)
-        print("✅ Predictions generated successfully!")
-
-        # Save predictions to a file
-        pd.DataFrame(predictions, columns=["predictions"]).to_csv("predictions.csv", index=False)
-        print("✅ Predictions saved to predictions.csv!")
-
-        return predictions
-    except Exception as e:
-        print(f"❌ Error generating predictions: {e}")
-        raise
+    # Verify that the model was logged, registered, and transitioned
+    print("✅ Model deployment completed!")
