@@ -32,10 +32,9 @@ def prepare_only(train_path, test_path):
         print(f"📊 X_test shape: {X_test.shape}")
 
         # Log the prepared data as artifacts in MLflow
-        with mlflow.start_run():
-            mlflow.log_artifact(train_path, "data")
-            mlflow.log_artifact(test_path, "data")
-            print("✅ Prepared data logged in MLflow.")
+        mlflow.log_artifact(train_path, "data")
+        mlflow.log_artifact(test_path, "data")
+        print("✅ Prepared data logged in MLflow.")
     except Exception as e:
         logging.error(f"Error during data preparation: {e}")
         sys.exit(1)
@@ -59,8 +58,6 @@ def evaluate_only(train_path, test_path):
     except Exception as e:
         logging.error(f"Error during model evaluation: {e}")
         sys.exit(1)
-
-
 
 def main(train_path, test_path, prepare_only_flag=False, train_flag=False, deploy_flag=False, evaluate_flag=False, stage="Staging"):
     """
