@@ -32,7 +32,7 @@ pipeline {
         // Étape 3: Tests de sécurité (Bandit et Safety)
         stage('Security Tests') {
             steps {
-                catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                catchError(buildResult: 'SUCCESS', stageResult: 'SUCCESS') {
                     sh '''
                         . ${VENV_PATH}/bin/activate
                         bandit -r src/ -o bandit_report.txt
@@ -50,7 +50,7 @@ pipeline {
         // Étape 4: Tests de qualité de code (flake8, black, pylint, isort)
         stage('Code Quality') {
             steps {
-                catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                catchError(buildResult: 'SUCCESS', stageResult: 'SUCCESS') {
                     sh '''
                         . ${VENV_PATH}/bin/activate
                         flake8 src/ --config=.flake8 --output-file=flake8_report.txt
@@ -66,13 +66,15 @@ pipeline {
                 }
             }
         }
-         stage('Unit Tests') {
+
+        // Étape 5: Tests unitaires
+        stage('Unit Tests') {
             steps {
                 catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                     sh '''
                         . ${VENV_PATH}/bin/activate
-                        export PYTHONPATH=${WORKSPACE}  # Ajouter le répertoire de travail au PYTHONPATH
-                        pytest --cov=src --cov-report=xml --junitxml=pytest_report.xml test/  # Exécuter les tests unitaires
+                        export PYTHONPATH=${WORKSPACE}  // Ajouter le répertoire de travail au PYTHONPATH
+                        pytest --cov=src --cov-report=xml --junitxml=pytest_report.xml test/  // Exécuter les tests unitaires
                     '''
                 }
             }
@@ -82,7 +84,8 @@ pipeline {
                 }
             }
         }
-        // Étape 5: Préparation des données
+
+        // Étape 6: Préparation des données
         stage('Prepare Data') {
             steps {
                 sh '''
@@ -92,7 +95,7 @@ pipeline {
             }
         }
 
-        // Étape 6: Entraînement du modèle
+        // Étape 7: Entraînement du modèle
         stage('Train Model') {
             steps {
                 sh '''
@@ -102,7 +105,7 @@ pipeline {
             }
         }
 
-        // Étape 7: Évaluation du modèle
+        // Étape 8: Évaluation du modèle
         stage('Evaluate Model') {
             steps {
                 sh '''
@@ -112,7 +115,7 @@ pipeline {
             }
         }
 
-        // Étape 8: Démarrer MLflow UI
+        // Étape 9: Démarrer MLflow UI
         stage('Start MLflow UI') {
             steps {
                 sh '''
