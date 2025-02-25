@@ -1,0 +1,15 @@
+artifact_uri: file:///home/tasnim/projet_final/mlruns/0/f17b0a2bd1634a5b8aeb23e0b036ec93/artifacts
+end_time: 1740508570886
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: f17b0a2bd1634a5b8aeb23e0b036ec93
+run_name: loud-vole-151
+run_uuid: f17b0a2bd1634a5b8aeb23e0b036ec93
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1740508562685
+status: 3
+tags: []
+user_id: tasnim

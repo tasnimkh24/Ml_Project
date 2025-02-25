@@ -1,0 +1,15 @@
+artifact_uri: file:///home/tasnim/projet_final/mlruns/0/fad0da998e6648eebbf9bc8b7212384d/artifacts
+end_time: 1740508449482
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: fad0da998e6648eebbf9bc8b7212384d
+run_name: resilient-newt-858
+run_uuid: fad0da998e6648eebbf9bc8b7212384d
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1740508429204
+status: 3
+tags: []
+user_id: tasnim
