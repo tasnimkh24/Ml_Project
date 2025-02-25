@@ -147,11 +147,10 @@ def train_model(X_train, y_train):
 
         # Log hyperparameters and metrics to MLflow
         best_params = random_search.best_params_
-        with mlflow.start_run():
-            mlflow.log_params(best_params)
-            mlflow.log_metric("accuracy", random_search.best_score_)
-            mlflow.sklearn.log_model(random_search.best_estimator_, "model")
-            logger.info("✅ Model trained and logged in MLflow!")
+        mlflow.log_params(best_params)  # Log parameters
+        mlflow.log_metric("accuracy", random_search.best_score_)  # Log metrics
+        mlflow.sklearn.log_model(random_search.best_estimator_, "model")  # Log model
+        logger.info("✅ Model trained and logged in MLflow!")
 
         # Save the model locally
         save_model(random_search.best_estimator_)
@@ -162,7 +161,8 @@ def train_model(X_train, y_train):
     except Exception as e:
         logger.error(f"Error during model training: {e}")
         raise
-
+    
+    
 def evaluate_model(model, X_test, y_test):
     """
     Evaluate the model and log metrics.
