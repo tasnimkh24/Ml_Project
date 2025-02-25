@@ -60,6 +60,7 @@ def evaluate_only(train_path, test_path):
         logging.error(f"Error during model evaluation: {e}")
         sys.exit(1)
 
+
 def main(train_path, test_path, prepare_only_flag=False, train_flag=False, deploy_flag=False, evaluate_flag=False, stage="Staging"):
     """
     Main function to handle data preparation, training, evaluation, and deployment.
@@ -69,27 +70,29 @@ def main(train_path, test_path, prepare_only_flag=False, train_flag=False, deplo
         validate_file_path(train_path)
         validate_file_path(test_path)
 
-        if deploy_flag:
-            deploy_model(stage=stage)  # Pass the stage argument
-        elif prepare_only_flag:
-            prepare_only(train_path, test_path)
-        elif train_flag:
-            X_train, X_test, y_train, y_test, X_cluster, y_cluster = prepare_data(train_path, test_path)
-            print("\n✅ Data Preparation Completed!")
-            print("\n🚀 Training Model...")
-            model = train_model(X_train, y_train)  # This function logs the model in MLflow
-            save_model(model)  # Save the model locally
-            loaded_model = load_model()  # Load the model for evaluation
-            y_pred = loaded_model.predict(X_test)
-            accuracy = accuracy_score(y_test, y_pred)
-            print(f"\n✅ Model Training Completed! Accuracy: {accuracy:.4f}")
-            print("\n📊 Evaluating the model...")
-            evaluate_model(model, X_test, y_test)
-            print("✅ Model evaluation successful!")
-        elif evaluate_flag:
-            evaluate_only(train_path, test_path)
-        else:
-            print("❌ No action specified. Use --prepare, --train, --evaluate, or --deploy.")
+        # Start an MLflow run
+        with mlflow.start_run():
+            if deploy_flag:
+                deploy_model(stage=stage)  # Pass the stage argument
+            elif prepare_only_flag:
+                prepare_only(train_path, test_path)
+            elif train_flag:
+                X_train, X_test, y_train, y_test, X_cluster, y_cluster = prepare_data(train_path, test_path)
+                print("\n✅ Data Preparation Completed!")
+                print("\n🚀 Training Model...")
+                model = train_model(X_train, y_train)  # This function logs the model in MLflow
+                save_model(model)  # Save the model locally
+                loaded_model = load_model()  # Load the model for evaluation
+                y_pred = loaded_model.predict(X_test)
+                accuracy = accuracy_score(y_test, y_pred)
+                print(f"\n✅ Model Training Completed! Accuracy: {accuracy:.4f}")
+                print("\n📊 Evaluating the model...")
+                evaluate_model(model, X_test, y_test)
+                print("✅ Model evaluation successful!")
+            elif evaluate_flag:
+                evaluate_only(train_path, test_path)
+            else:
+                print("❌ No action specified. Use --prepare, --train, --evaluate, or --deploy.")
     except Exception as e:
         logging.error(f"Error in main function: {e}")
         sys.exit(1)

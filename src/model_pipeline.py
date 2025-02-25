@@ -115,6 +115,11 @@ def prepare_data(train_path, test_path):
         logger.error(f"Error during data preparation: {e}")
         raise
 
+import mlflow
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.model_selection import RandomizedSearchCV
+from scipy.stats import randint, uniform
+
 def train_model(X_train, y_train):
     """
     Train a Gradient Boosting Classifier with hyperparameter optimization.
@@ -147,19 +152,15 @@ def train_model(X_train, y_train):
 
         # Log hyperparameters and metrics to MLflow
         best_params = random_search.best_params_
-        mlflow.log_params(best_params)  # Log parameters
-        mlflow.log_metric("accuracy", random_search.best_score_)  # Log metrics
-        mlflow.sklearn.log_model(random_search.best_estimator_, "model")  # Log model
-        logger.info("✅ Model trained and logged in MLflow!")
-
-        # Save the model locally
-        save_model(random_search.best_estimator_)
+        mlflow.log_params(best_params)
+        mlflow.log_metric("accuracy", random_search.best_score_)
+        mlflow.sklearn.log_model(random_search.best_estimator_, "model")
 
         # Return the best model
         return random_search.best_estimator_
 
     except Exception as e:
-        logger.error(f"Error during model training: {e}")
+        print(f"Error during model training: {e}")
         raise
     
     
