@@ -64,9 +64,19 @@ def main(train_path, test_path, prepare_only_flag=False, train_flag=False, deplo
     Main function to handle data preparation, training, evaluation, and deployment.
     """
     try:
-        # Validate file paths
-        validate_file_path(train_path)
-        validate_file_path(test_path)
+        # Check if train_path and test_path are provided when needed
+        if (prepare_only_flag or train_flag or evaluate_flag) and (train_path is None or test_path is None):
+            raise ValueError("❌ train_path and test_path must be provided for --prepare, --train, or --evaluate.")
+
+        # Validate file paths if they are provided
+        if train_path is not None:
+            validate_file_path(train_path)
+        if test_path is not None:
+            validate_file_path(test_path)
+
+        # Ensure no active run exists
+        if mlflow.active_run():
+            mlflow.end_run()
 
         # Start a single MLflow run for the entire process
         with mlflow.start_run():
@@ -94,7 +104,7 @@ def main(train_path, test_path, prepare_only_flag=False, train_flag=False, deplo
     except Exception as e:
         logging.error(f"Error in main function: {e}")
         sys.exit(1)
-    
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Test the prepare_data function")
     parser.add_argument("--train-data", type=str, required=False, help="Path to the training CSV file")

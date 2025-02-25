@@ -276,7 +276,11 @@ def deploy_model(stage="Staging"):
         model = load_model("models/gbm_model.joblib")
         logger.info("\n🚀 Deploying Model...")
 
-        # Log the deployed model in MLflow
+        # Ensure no active run exists
+        if mlflow.active_run():
+            mlflow.end_run()
+
+        # Start a new MLflow run
         with mlflow.start_run():
             logger.info("✅ MLflow run started.")
             

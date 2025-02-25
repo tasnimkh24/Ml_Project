@@ -5,7 +5,8 @@ pipeline {
         GITHUB_TOKEN = credentials('testes')
         PYTHON = 'python3.10'
         VENV_PATH = '/tmp/venv'
-        MLFLOW_PORT = '5003'  // Port pour MLflow UI
+        MLFLOW_PORT = '5003'
+        MLFLOW_TRACKING_URI = 'sqlite:///mlflow.db'  // Add this line
     }
 
     stages {
@@ -124,18 +125,20 @@ pipeline {
             steps {
                 sh '''
                     . ${VENV_PATH}/bin/activate
-                    mlflow ui --host 0.0.0.0 --port ${MLFLOW_PORT} &
+                    nohup mlflow ui --backend-store-uri sqlite:///mlflow.db --host 0.0.0.0 --port ${MLFLOW_PORT} > mlflow.log 2>&1 &
+                    echo "MLflow UI started at http://<jenkins-server>:${MLFLOW_PORT}"
                 '''
             }
         }
     }
 
     post {
-        failure {
-            echo '❌ Pipeline failed!'
-        }
         success {
             echo '✅ Pipeline succeeded!'
+            archiveArtifacts artifacts: 'mlruns/**/*', allowEmptyArchive: true
+        }
+        failure {
+            echo '❌ Pipeline failed!'
         }
         unstable {
             echo '⚠️ Pipeline unstable! Check security or quality issues.'
